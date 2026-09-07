@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-serif-cinematic {
+    font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  }
+  .font-serif-editorial {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+  .font-sans-modern {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+  .font-grotesk {
+    font-family: 'Syne', sans-serif;
+  }
+}
+
+/* Base theme defaults */
+:root {
+  --bg-obsidian: #0A0A0C;
+  --text-warm: #F4F4F0;
+  --muted-grey: #8E8E93;
+  --stargaze-gold: #E5C158;
+  --stargaze-gold-hover: #F0CE68;
+}
+
+body {
+  background-color: #0A0A0C;
+  color: #F4F4F0;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Cinematic Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0C;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E5C158;
+}
+
+/* Noise & Frame Depth Helpers */
+.stargaze-frame-border {
+  border: 1px solid rgba(229, 193, 88, 0.2);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(229, 193, 88, 0.05);
+}
+
+.stargaze-frame-glow {
+  box-shadow: 0 0 50px rgba(229, 193, 88, 0.15);
+}
+
+/* Hide default cursor on desktop when custom cursor is active */
+@media (min-width: 1024px) {
+  .custom-cursor-active,
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+}

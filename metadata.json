@@ -1,0 +1,6 @@
+{
+  "name": "Stargaze Media",
+  "description": "Cinematic media production CMS & public platform with role-based access control and user management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
