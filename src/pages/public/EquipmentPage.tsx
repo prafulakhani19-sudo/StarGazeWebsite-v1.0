@@ -3,6 +3,7 @@ import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { INITIAL_EQUIPMENT } from '../../data/mockData';
 import { Camera } from 'lucide-react';
+import { StargazeImage } from '../../components/common/StargazeImage';
 
 export const EquipmentPage: React.FC = () => {
   const publishedEquipment = INITIAL_EQUIPMENT.filter((e) => e.status === 'PUBLISHED');
@@ -29,7 +30,7 @@ export const EquipmentPage: React.FC = () => {
             >
               <div>
                 <div className="aspect-[16/9] rounded-xl overflow-hidden mb-4 bg-zinc-950">
-                  <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                  <StargazeImage src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-xs font-mono uppercase tracking-widest text-amber-500 block mb-1">{item.category}</span>
                 <h3 className="text-lg font-bold text-white mb-2">{item.name}</h3>

@@ -3,6 +3,7 @@ import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { INITIAL_EVENTS } from '../../data/mockData';
 import { Calendar } from 'lucide-react';
+import { StargazeImage } from '../../components/common/StargazeImage';
 
 export const EventsPage: React.FC = () => {
   const publishedEvents = INITIAL_EVENTS.filter((e) => e.status === 'PUBLISHED');
@@ -28,7 +29,7 @@ export const EventsPage: React.FC = () => {
               className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center"
             >
               <div className="w-full md:w-1/3 aspect-[16/9] rounded-xl overflow-hidden bg-zinc-950 shrink-0">
-                <img src={evt.imageUrl} alt={evt.title} className="w-full h-full object-cover" />
+                <StargazeImage src={evt.imageUrl} alt={evt.title} className="w-full h-full object-cover" />
               </div>
               <div className="space-y-3 flex-1">
                 <span className="text-xs font-mono text-amber-500 uppercase tracking-widest">{evt.category} • {evt.location}</span>

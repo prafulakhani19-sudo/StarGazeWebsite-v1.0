@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Sparkles, Menu, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullscreenNavOverlay } from './FullscreenNavOverlay';
+import { STARGAZE_LOGO_PATH } from '../../data/media';
 
 export const PublicHeader: React.FC = () => {
   const [navOverlayOpen, setNavOverlayOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
   const { user, profile } = useAuth();
 
   return (
@@ -14,8 +16,17 @@ export const PublicHeader: React.FC = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3.5 group" data-cursor="VIEW">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E5C158] to-amber-200 flex items-center justify-center text-black font-extrabold shadow-lg shadow-[#E5C158]/20 group-hover:scale-105 transition">
-                <Sparkles className="w-5 h-5 fill-black text-black" />
+              <div className="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E5C158] to-amber-200 flex items-center justify-center text-black font-extrabold shadow-lg shadow-[#E5C158]/20 group-hover:scale-105 transition overflow-hidden">
+                {!logoError ? (
+                  <img
+                    src={STARGAZE_LOGO_PATH}
+                    alt="Stargaze Media & Entertainment"
+                    className="w-full h-full object-contain"
+                    onError={() => setLogoError(true)}
+                  />
+                ) : (
+                  <Sparkles className="w-5 h-5 fill-black text-black" />
+                )}
               </div>
               <div>
                 <span className="text-xl font-black tracking-[0.2em] text-white block uppercase font-serif-cinematic">

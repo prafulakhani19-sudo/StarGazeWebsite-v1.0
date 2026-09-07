@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ChevronLeft, ChevronRight, Play, Film, Sparkles } from 'lucide-react';
-import { CLIENT_MEDIA, ResponsiveMedia } from '../../lib/media';
+import { STARGAZE_MEDIA_REGISTRY } from '../../data/media';
 import { StargazeImage } from '../common/StargazeImage';
 
 export interface HeroSlideData {
@@ -10,7 +10,8 @@ export interface HeroSlideData {
   title: string;
   highlightTitle?: string;
   description: string;
-  media: ResponsiveMedia;
+  desktopSrc: string;
+  mobileSrc: string;
   primaryCtaText: string;
   primaryCtaLink: string;
   primaryCtaExternal?: boolean;
@@ -25,7 +26,8 @@ const HERO_SLIDES: HeroSlideData[] = [
     title: 'WE CREATE WHAT THE',
     highlightTitle: 'WORLD WATCHES',
     description: 'Production • Post-Production • Camera Equipment • Distribution • Entertainment Experiences',
-    media: CLIENT_MEDIA['nayi-soch'],
+    desktopSrc: '', // Branded dark cinematic backdrop per Part 9
+    mobileSrc: '',
     primaryCtaText: 'START A PROJECT',
     primaryCtaLink: '/enquiry',
     secondaryCtaText: 'EXPLORE CINEMA SLATE',
@@ -37,7 +39,8 @@ const HERO_SLIDES: HeroSlideData[] = [
     title: 'NAYI SOCH',
     highlightTitle: '(112)',
     description: 'An impactful short film produced by Satish Tulshiramji Mohod in collaboration with Nagpur Police, featuring Mohana Ramteke. Highlighting safety, awareness, and social transformation.',
-    media: CLIENT_MEDIA['nayi-soch'],
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find(m => m.id === 'nayi-soch-desktop')?.src || '',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find(m => m.id === 'nayi-soch-mobile')?.src || '',
     primaryCtaText: 'WATCH TRAILER',
     primaryCtaLink: 'https://www.youtube.com/watch?v=orangecityproductions',
     primaryCtaExternal: true,
@@ -50,7 +53,8 @@ const HERO_SLIDES: HeroSlideData[] = [
     title: 'PSYCHO',
     highlightTitle: '(SAMJO TO)',
     description: 'Produced by Satish Mohod (Orange City Production). Official selections at New Delhi Film Festival, DPIFF Awards, Lift-Off Global Network, and Mumba International Short Film Festival.',
-    media: CLIENT_MEDIA['psycho'],
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find(m => m.id === 'psycho-desktop')?.src || '',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find(m => m.id === 'psycho-mobile')?.src || '',
     primaryCtaText: 'EXPLORE SLATE',
     primaryCtaLink: '#slate',
     secondaryCtaText: 'ENQUIRE RIGHTS',
@@ -62,7 +66,8 @@ const HERO_SLIDES: HeroSlideData[] = [
     title: 'SAHEB VIKAS KARI',
     highlightTitle: '',
     description: 'Presented by Satish Mohod, Orange City Production. Written by Vaibhav Arjun Parab. Starring Kyra Agrawal, Satish Mohod, Shrutika Nikode, and Swapnil Bhongade.',
-    media: CLIENT_MEDIA['saheb-vikaskari'],
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find(m => m.id === 'saheb-vikaskari-desktop')?.src || '',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find(m => m.id === 'saheb-vikaskari-mobile')?.src || '',
     primaryCtaText: 'VIEW PROJECT',
     primaryCtaLink: '#slate',
     secondaryCtaText: 'START ENQUIRY',
@@ -191,21 +196,27 @@ export const HeroSlider: React.FC = () => {
           >
             {/* Desktop Image */}
             <div className="absolute inset-0 hidden md:block">
-              <StargazeImage
-                src={currentSlide.media.desktop}
-                alt={currentSlide.title}
-                fallbackTitle={currentSlide.title}
-                className="w-full h-full object-cover transition-transform duration-1000"
-              />
+              {currentSlide.desktopSrc ? (
+                <StargazeImage
+                  src={currentSlide.desktopSrc}
+                  alt={currentSlide.title}
+                  className="w-full h-full object-cover transition-transform duration-1000"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-black" />
+              )}
             </div>
             {/* Mobile / Portrait Image */}
             <div className="absolute inset-0 block md:hidden">
-              <StargazeImage
-                src={currentSlide.media.mobile}
-                alt={currentSlide.title}
-                fallbackTitle={currentSlide.title}
-                className="w-full h-full object-cover"
-              />
+              {currentSlide.mobileSrc ? (
+                <StargazeImage
+                  src={currentSlide.mobileSrc}
+                  alt={currentSlide.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-black" />
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -330,9 +341,8 @@ export const HeroSlider: React.FC = () => {
                 >
                   <div className="absolute inset-0 z-0">
                     <StargazeImage
-                      src={slide.media.desktop}
+                      src={slide.desktopSrc}
                       alt={slide.title}
-                      fallbackTitle={slide.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>

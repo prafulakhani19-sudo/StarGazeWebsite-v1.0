@@ -1,5 +1,5 @@
 import { DistributionTitle, EquipmentItem, EventItem, NewsArticle, ProjectItem } from '../types';
-import { CLIENT_MEDIA } from '../lib/media';
+import { CLIENT_MEDIA } from '../data/media';
 
 export const INITIAL_PROJECTS: ProjectItem[] = [
   {

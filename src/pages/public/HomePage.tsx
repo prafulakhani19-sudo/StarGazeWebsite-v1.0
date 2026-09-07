@@ -8,6 +8,7 @@ import { ProductionTimeline } from '../../components/public/ProductionTimeline';
 import { PostProductionSuite } from '../../components/public/PostProductionSuite';
 import { ProjectDetailModal } from '../../components/public/ProjectDetailModal';
 import { EquipmentDetailModal } from '../../components/public/EquipmentDetailModal';
+import { StargazeImage } from '../../components/common/StargazeImage';
 import { INITIAL_PROJECTS, INITIAL_EQUIPMENT, INITIAL_EVENTS, INITIAL_NEWS, INITIAL_DISTRIBUTION } from '../../data/mockData';
 import { ProjectItem, EquipmentItem } from '../../types';
 import { Film, Camera, Sparkles, ArrowRight, Calendar, Play, ChevronRight, CheckCircle2, Globe, Award, Newspaper, ArrowUpRight } from 'lucide-react';
@@ -95,7 +96,7 @@ export const HomePage: React.FC = () => {
                 className="group relative bg-zinc-950 border border-white/10 rounded-2xl overflow-hidden hover:border-[#E5C158]/50 transition duration-500 cursor-pointer flex flex-col justify-between"
               >
                 <div className="aspect-[16/10] overflow-hidden relative">
-                  <img
+                  <StargazeImage
                     src={project.posterUrl}
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
@@ -168,7 +169,7 @@ export const HomePage: React.FC = () => {
               >
                 <div>
                   <div className="aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-zinc-900 border border-white/5">
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    <StargazeImage src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                   </div>
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#E5C158] block mb-1">
                     {item.category}
@@ -222,7 +223,7 @@ export const HomePage: React.FC = () => {
                 className="bg-zinc-950 border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 hover:border-[#E5C158]/40 transition"
               >
                 <div className="w-full sm:w-44 aspect-[3/4] rounded-xl overflow-hidden shrink-0 bg-zinc-900">
-                  <img src={dist.posterUrl} alt={dist.title} className="w-full h-full object-cover" />
+                  <StargazeImage src={dist.posterUrl} alt={dist.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 flex flex-col justify-between space-y-3">
                   <div>
@@ -273,7 +274,7 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {publishedEvents.map((evt) => (
               <div key={evt.id} className="group relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-950 aspect-[16/9]">
-                <img src={evt.imageUrl} alt={evt.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60" />
+                <StargazeImage src={evt.imageUrl} alt={evt.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/40 to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-6 space-y-2">
                   <div className="flex items-center gap-3 text-xs font-mono text-[#E5C158]">
