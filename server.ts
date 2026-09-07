@@ -10,15 +10,24 @@ import crypto from 'crypto';
 import * as admin from 'firebase-admin';
 
 const app = express();
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Health check endpoint for Hostinger deployment monitoring
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Ensure public/uploads directory exists
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  } catch (e) {
+    // Ignore directory creation error in read-only environments
+  }
 }
 app.use('/uploads', express.static(uploadsDir));
 
@@ -39,28 +48,43 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }
 });
 
-// Load Firebase applet configuration
+// Load Firebase applet configuration with solid embedded fallbacks
 const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
-let firebaseConfig: any = {};
+let firebaseConfig: any = {
+  projectId: "gen-lang-client-0743504908",
+  appId: "1:641419185522:web:f6c67018d6905a351221eb",
+  apiKey: "AIzaSyAapMud4F8MAwL4gD_XjeI2bOMS8hSYjRE",
+  authDomain: "gen-lang-client-0743504908.firebaseapp.com",
+  firestoreDatabaseId: "ai-studio-stargazemedia-e17acc3d-69b6-482b-b0c3-4c2600378656",
+  storageBucket: "gen-lang-client-0743504908.firebasestorage.app",
+  messagingSenderId: "641419185522"
+};
+
 if (fs.existsSync(configPath)) {
   try {
-    firebaseConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const loaded = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    firebaseConfig = { ...firebaseConfig, ...loaded };
   } catch (err) {
     console.error('Failed to parse firebase-applet-config.json:', err);
   }
 }
 
 // Initialize Client Firebase App for Node runtime
-const clientApp = initClientApp({
-  projectId: firebaseConfig.projectId,
-  appId: firebaseConfig.appId,
-  apiKey: firebaseConfig.apiKey,
-  authDomain: firebaseConfig.authDomain,
-  storageBucket: firebaseConfig.storageBucket,
-  messagingSenderId: firebaseConfig.messagingSenderId,
-});
+let clientApp: any = null;
+try {
+  clientApp = initClientApp({
+    projectId: firebaseConfig.projectId,
+    appId: firebaseConfig.appId,
+    apiKey: firebaseConfig.apiKey,
+    authDomain: firebaseConfig.authDomain,
+    storageBucket: firebaseConfig.storageBucket,
+    messagingSenderId: firebaseConfig.messagingSenderId,
+  });
+} catch (e: any) {
+  console.warn('Client app init notice:', e?.message || e);
+}
 
-const clientDb = clientFs.getFirestore(clientApp, firebaseConfig.firestoreDatabaseId || undefined);
+const clientDb = clientApp ? clientFs.getFirestore(clientApp, firebaseConfig.firestoreDatabaseId || undefined) : null;
 const db = clientDb;
 
 // Initialize Firebase Admin for Custom Token Generation
@@ -817,8 +841,9 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Stargaze Media Server running on http://0.0.0.0:${PORT}`);
+  const portNum = typeof PORT === 'string' ? parseInt(PORT, 10) || 3000 : PORT;
+  app.listen(portNum, '0.0.0.0', () => {
+    console.log(`Stargaze Media Server running on http://0.0.0.0:${portNum}`);
   });
 }
 
