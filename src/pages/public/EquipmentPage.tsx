@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { INITIAL_EQUIPMENT } from '../../data/mockData';
+import { EquipmentItem } from '../../types';
+import { resolveEquipmentMedia } from '../../lib/mediaResolver';
+import { getEquipment } from '../../lib/cmsService';
 import { Camera } from 'lucide-react';
 import { StargazeImage } from '../../components/common/StargazeImage';
 
 export const EquipmentPage: React.FC = () => {
-  const publishedEquipment = INITIAL_EQUIPMENT.filter((e) => e.status === 'PUBLISHED');
+  const [equipment, setEquipment] = useState<EquipmentItem[]>(INITIAL_EQUIPMENT);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const cmsData = await getEquipment();
+        const base = cmsData && cmsData.length > 0 ? cmsData : INITIAL_EQUIPMENT;
+        const resolved = await Promise.all(base.map(resolveEquipmentMedia));
+        if (isMounted) setEquipment(resolved);
+      } catch (err) {
+        console.warn('Error loading equipment, using defaults:', err);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const publishedEquipment = equipment.filter((e) => e.status === 'PUBLISHED');
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans">
@@ -30,7 +53,7 @@ export const EquipmentPage: React.FC = () => {
             >
               <div>
                 <div className="aspect-[16/9] rounded-xl overflow-hidden mb-4 bg-zinc-950">
-                  <StargazeImage src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                  <StargazeImage src={item.imageUrl} alt={item.name} focalPoint={item.focalPoint} className="w-full h-full object-cover" />
                 </div>
                 <span className="text-xs font-mono uppercase tracking-widest text-amber-500 block mb-1">{item.category}</span>
                 <h3 className="text-lg font-bold text-white mb-2">{item.name}</h3>

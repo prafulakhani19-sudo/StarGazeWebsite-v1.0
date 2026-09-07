@@ -211,7 +211,9 @@ export const UserManagementPage: React.FC = () => {
   };
 
   // Filter & Sort Logic
-  const filteredUsers = users.filter((u) => {
+  const safeUsers = Array.isArray(users) ? users : [];
+  const filteredUsers = safeUsers.filter((u) => {
+    if (!u) return false;
     const matchesSearch =
       u.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -224,8 +226,8 @@ export const UserManagementPage: React.FC = () => {
   });
 
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-    let valA = a[sortBy] || '';
-    let valB = b[sortBy] || '';
+    let valA = a && sortBy ? a[sortBy] || '' : '';
+    let valB = b && sortBy ? b[sortBy] || '' : '';
     if (valA < valB) return sortAsc ? -1 : 1;
     if (valA > valB) return sortAsc ? 1 : -1;
     return 0;

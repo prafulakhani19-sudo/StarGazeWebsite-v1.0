@@ -94,17 +94,63 @@ export interface ActivityLog {
 
 export type ContentStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
+export interface HeroSlideItem {
+  id: string;
+  title: string;
+  category: string;
+  projectRef?: string;
+  eyebrow?: string;
+  description?: string;
+  highlightTitle?: string;
+  primaryCtaText?: string;
+  primaryCtaLink?: string;
+  primaryCtaExternal?: boolean;
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
+  trailerUrl?: string;
+  desktopMediaId?: string;
+  mobileMediaId?: string;
+  desktopSrc?: string;
+  mobileSrc?: string;
+  desktopFocalPoint?: { x: number; y: number };
+  mobileFocalPoint?: { x: number; y: number };
+  caption?: string;
+  ctaLabel?: string;
+  ctaDestination?: string;
+  status: ContentStatus;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ProjectItem {
   id: string;
   title: string;
+  slug?: string;
   genre: string;
   director: string;
   synopsis: string;
+  longDescription?: string;
+  clientInfo?: string;
+  location?: string;
+  credits?: string;
+  services?: string[];
   posterUrl: string;
+  coverMediaId?: string;
+  heroMediaId?: string;
+  heroUrl?: string;
+  galleryMediaIds?: string[];
+  galleryUrls?: string[];
   trailerUrl?: string;
+  videoUrl?: string;
   releaseYear: number;
   status: ContentStatus;
   featured: boolean;
+  displayOrder?: number;
+  focalPoint?: { x: number; y: number };
+  seoTitle?: string;
+  seoDescription?: string;
+  socialImageMediaId?: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -114,10 +160,17 @@ export interface EquipmentItem {
   name: string;
   category: 'Camera' | 'Lens' | 'DOP Rig' | 'Lighting' | 'Audio' | 'Grip';
   specs: string;
+  description?: string;
   dailyRate: number;
   availability: 'AVAILABLE' | 'RENTED' | 'MAINTENANCE';
   imageUrl: string;
+  primaryMediaId?: string;
+  imageMediaId?: string;
+  galleryMediaIds?: string[];
+  featured?: boolean;
+  displayOrder?: number;
   status: ContentStatus;
+  focalPoint?: { x: number; y: number };
   updatedAt: string;
 }
 
@@ -128,8 +181,19 @@ export interface EventItem {
   location: string;
   eventDate: string;
   description: string;
+  longDescription?: string;
   imageUrl: string;
+  coverMediaId?: string;
+  imageMediaId?: string;
+  galleryMediaIds?: string[];
+  featured?: boolean;
+  ctaLabel?: string;
+  ctaDestination?: string;
+  displayOrder?: number;
   status: ContentStatus;
+  focalPoint?: { x: number; y: number };
+  seoTitle?: string;
+  seoDescription?: string;
   updatedAt: string;
 }
 
@@ -141,21 +205,181 @@ export interface DistributionTitle {
   rightsAvailable: string[];
   synopsis: string;
   posterUrl: string;
+  coverMediaId?: string;
+  featured?: boolean;
+  displayOrder?: number;
   status: ContentStatus;
+  focalPoint?: { x: number; y: number };
+  updatedAt: string;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  shortBio?: string;
+  fullBio?: string;
+  bio?: string;
+  department?: string;
+  portraitUrl?: string;
+  portraitMediaId?: string;
+  photoUrl?: string;
+  photoMediaId?: string;
+  socialLinks?: { twitter?: string; linkedin?: string; imdb?: string; instagram?: string };
+  displayOrder: number;
+  featured: boolean;
+  status: ContentStatus;
+  focalPoint?: { x: number; y: number };
+  updatedAt: string;
+}
+
+export interface PartnerItem {
+  id: string;
+  name: string;
+  logoUrl: string;
+  logoMediaId?: string;
+  website?: string;
+  websiteUrl?: string;
+  description?: string;
+  category: 'MEDIA' | 'PRODUCTION' | 'DISTRIBUTION' | 'POLICE_DEPARTMENT' | 'TECHNOLOGY' | 'ACADEMIC';
+  displayOrder: number;
+  featured?: boolean;
+  status: ContentStatus;
+  focalPoint?: { x: number; y: number };
+  updatedAt: string;
+}
+
+export interface MarketingProjectItem {
+  id: string;
+  title: string;
+  category?: string;
+  serviceCategory?: string;
+  campaignGoal?: string;
+  keyDeliverables?: string[];
+  metrics?: string;
+  description?: string;
+  heroUrl?: string;
+  heroMediaId?: string;
+  mediaIds?: string[];
+  mediaUrls?: string[];
+  videoUrl?: string;
+  client?: string;
+  services?: string[];
+  results?: string;
+  featured?: boolean;
+  displayOrder: number;
+  status: ContentStatus;
+  focalPoint?: { x: number; y: number };
   updatedAt: string;
 }
 
 export interface NewsArticle {
   id: string;
   title: string;
+  slug?: string;
   summary: string;
   content: string;
   author: string;
   publishDate: string;
   category: 'Announcement' | 'Press Release' | 'Insight' | 'Awards';
   imageUrl: string;
+  featuredMediaId?: string;
+  imageMediaId?: string;
+  galleryMediaIds?: string[];
+  tags?: string[];
   status: ContentStatus;
+  featured?: boolean;
+  displayOrder?: number;
+  focalPoint?: { x: number; y: number };
+  seoTitle?: string;
+  seoDescription?: string;
+  socialImageMediaId?: string;
   updatedAt: string;
+}
+
+export interface HomepageSectionConfig {
+  id: string;
+  enabled: boolean;
+  eyebrow: string;
+  heading: string;
+  description: string;
+  ctaLabel?: string;
+  ctaDestination?: string;
+  displayOrder: number;
+}
+
+export interface SiteContentConfig {
+  id?: string;
+  homepageSections?: Record<string, HomepageSectionConfig>;
+  brandStatement?: {
+    eyebrow: string;
+    heading: string;
+    description: string;
+    highlightText: string;
+  };
+  contactCopy?: {
+    introHeading: string;
+    introDescription: string;
+    officeAddress: string;
+    email: string;
+    phone: string;
+    workingHours: string;
+  };
+  footerCopy?: {
+    tagline: string;
+    copyrightText: string;
+  };
+  stats?: Array<{ value: string; label: string; helper?: string }>;
+  aboutStudioTitle?: string;
+  aboutStudioText?: string;
+  aboutStudioQuote?: string;
+  aboutStudioQuoteAuthor?: string;
+}
+
+export interface BrandSettings {
+  id?: string;
+  brandName: string;
+  legalEntityName?: string;
+  contactEmail?: string;
+  supportPhone?: string;
+  tagline: string;
+  primaryLogoMediaId?: string;
+  primaryLogoUrl?: string;
+  altLogoMediaId?: string;
+  altLogoUrl?: string;
+  faviconMediaId?: string;
+  faviconUrl?: string;
+  socialSharingMediaId?: string;
+  socialSharingUrl?: string;
+  updatedAt?: string;
+}
+
+export interface SEOSettings {
+  id?: string;
+  siteTitle: string;
+  metaDescription: string;
+  keywords?: string | string[];
+  canonicalUrl?: string;
+  defaultSocialImageMediaId?: string;
+  defaultSocialImageUrl?: string;
+  ogTitle: string;
+  ogDescription: string;
+  twitterHandle?: string;
+  robotsIndex: boolean;
+  updatedAt?: string;
+}
+
+export interface MediaUsageLocation {
+  entityType: 'HERO' | 'PROJECT' | 'EVENT' | 'EQUIPMENT' | 'TEAM' | 'PARTNER' | 'MARKETING' | 'NEWS' | 'BRAND' | 'SLOT';
+  entityId: string;
+  entityTitle: string;
+  field: string;
+}
+
+export interface MediaUsageInfo {
+  mediaId: string;
+  count: number;
+  locations: MediaUsageLocation[];
 }
 
 export interface EnquiryItem {

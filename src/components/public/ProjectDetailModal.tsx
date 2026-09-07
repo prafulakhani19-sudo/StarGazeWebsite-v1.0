@@ -27,6 +27,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({ project,
           <StargazeImage
             src={project.posterUrl}
             alt={project.title}
+            focalPoint={project.focalPoint}
             fallbackTitle={project.title}
             category={project.genre}
             className="w-full h-full object-cover"

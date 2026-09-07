@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { INITIAL_NEWS } from '../../data/mockData';
+import { NewsArticle } from '../../types';
+import { resolveNewsMedia } from '../../lib/mediaResolver';
+import { getNewsArticles } from '../../lib/cmsService';
 import { Newspaper } from 'lucide-react';
 import { StargazeImage } from '../../components/common/StargazeImage';
 
 export const NewsPage: React.FC = () => {
-  const publishedNews = INITIAL_NEWS.filter((n) => n.status === 'PUBLISHED');
+  const [news, setNews] = useState<NewsArticle[]>(INITIAL_NEWS);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const cmsData = await getNewsArticles();
+        const base = cmsData && cmsData.length > 0 ? cmsData : INITIAL_NEWS;
+        const resolved = await Promise.all(base.map(resolveNewsMedia));
+        if (isMounted) setNews(resolved);
+      } catch (err) {
+        console.warn('Error loading news, using defaults:', err);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const publishedNews = news.filter((n) => n.status === 'PUBLISHED');
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans">
@@ -23,7 +46,7 @@ export const NewsPage: React.FC = () => {
           {publishedNews.map((article) => (
             <div key={article.id} className="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden p-6 space-y-4">
               <div className="aspect-[16/9] rounded-xl overflow-hidden bg-zinc-950">
-                <StargazeImage src={article.imageUrl} alt={article.title} className="w-full h-full object-cover" />
+                <StargazeImage src={article.imageUrl} alt={article.title} focalPoint={article.focalPoint} className="w-full h-full object-cover" />
               </div>
               <span className="text-xs font-mono text-amber-500 uppercase tracking-widest">{article.category} • {article.publishDate}</span>
               <h3 className="text-xl font-bold text-white">{article.title}</h3>

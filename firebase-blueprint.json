@@ -1,0 +1,247 @@
+{
+  "entities": {
+    "HeroSlide": {
+      "title": "HeroSlide",
+      "description": "Hero banner slides for the homepage",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "category": { "type": "string" },
+        "projectRef": { "type": "string" },
+        "eyebrow": { "type": "string" },
+        "description": { "type": "string" },
+        "desktopMediaId": { "type": "string" },
+        "mobileMediaId": { "type": "string" },
+        "desktopSrc": { "type": "string" },
+        "mobileSrc": { "type": "string" },
+        "caption": { "type": "string" },
+        "ctaLabel": { "type": "string" },
+        "ctaDestination": { "type": "string" },
+        "status": { "type": "string" },
+        "displayOrder": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "BrandSetting": {
+      "title": "BrandSetting",
+      "description": "Global brand colors, logos, and identity settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "companyName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "primaryColor": { "type": "string" },
+        "accentColor": { "type": "string" },
+        "logoDarkUrl": { "type": "string" },
+        "logoLightUrl": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Feature film or creative project",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "Equipment": {
+      "title": "Equipment",
+      "description": "Equipment inventory listing",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" }
+      }
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Screenings and production events",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "NewsArticle": {
+      "title": "NewsArticle",
+      "description": "Press release or editorial article",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "Distribution": {
+      "title": "Distribution",
+      "description": "Distribution title and licensing rights",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "TeamMember": {
+      "title": "TeamMember",
+      "description": "Core team member profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "Partner": {
+      "title": "Partner",
+      "description": "Studio partner profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "MarketingProject": {
+      "title": "MarketingProject",
+      "description": "Marketing campaign",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "Public contact enquiry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    },
+    "User": {
+      "title": "User",
+      "description": "User account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" }
+      }
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Audit log entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "action": { "type": "string" },
+        "timestamp": { "type": "string" }
+      }
+    },
+    "MediaItem": {
+      "title": "MediaItem",
+      "description": "Media library asset",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "MediaAssignment": {
+      "title": "MediaAssignment",
+      "description": "Slot to media ID mapping",
+      "type": "object",
+      "properties": {
+        "slot": { "type": "string" },
+        "mediaId": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/heroSlides/{slideId}": {
+      "schema": "HeroSlide",
+      "description": "Homepage hero slider items"
+    },
+    "/brandSettings/{settingId}": {
+      "schema": "BrandSetting",
+      "description": "Global brand customization settings"
+    },
+    "/site_settings/{settingId}": {
+      "schema": "BrandSetting",
+      "description": "Site content, brand, and SEO settings"
+    },
+    "/siteContent/{contentId}": {
+      "schema": "BrandSetting",
+      "description": "Homepage site content sections"
+    },
+    "/seoSettings/{seoId}": {
+      "schema": "BrandSetting",
+      "description": "Global SEO metadata"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Feature films and productions"
+    },
+    "/equipment/{equipmentId}": {
+      "schema": "Equipment",
+      "description": "Camera, lighting, and grip equipment"
+    },
+    "/events/{eventId}": {
+      "schema": "Event",
+      "description": "Premieres and screenings"
+    },
+    "/news/{articleId}": {
+      "schema": "NewsArticle",
+      "description": "Press releases and editorial news"
+    },
+    "/newsroom/{articleId}": {
+      "schema": "NewsArticle",
+      "description": "Newsroom articles"
+    },
+    "/distribution/{distId}": {
+      "schema": "Distribution",
+      "description": "Distribution slate and licensing"
+    },
+    "/team/{memberId}": {
+      "schema": "TeamMember",
+      "description": "Core team members"
+    },
+    "/partners/{partnerId}": {
+      "schema": "Partner",
+      "description": "Studio and technology partners"
+    },
+    "/marketingProjects/{marketingId}": {
+      "schema": "MarketingProject",
+      "description": "Marketing and PR campaigns"
+    },
+    "/enquiries/{enquiryId}": {
+      "schema": "Enquiry",
+      "description": "Public business enquiries"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/activity_logs/{logId}": {
+      "schema": "ActivityLog",
+      "description": "Audit trail and activity logs"
+    },
+    "/media/{mediaId}": {
+      "schema": "MediaItem",
+      "description": "Media library assets"
+    },
+    "/mediaAssignments/{slotId}": {
+      "schema": "MediaAssignment",
+      "description": "Assigned media slots"
+    }
+  }
+}

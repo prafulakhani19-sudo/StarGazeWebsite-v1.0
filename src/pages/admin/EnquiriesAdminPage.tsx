@@ -47,6 +47,8 @@ export const EnquiriesAdminPage: React.FC = () => {
     fetchEnquiries();
   }, []);
 
+  const safeEnquiries = Array.isArray(enquiries) ? enquiries : [];
+
   return (
     <ProtectedRoute requiredPermission="enquiries.view">
       <AdminLayout>
@@ -62,10 +64,10 @@ export const EnquiriesAdminPage: React.FC = () => {
           <div className="space-y-4">
             {loading ? (
               <div className="text-center py-12 text-zinc-500 font-mono text-xs">Loading studio enquiries...</div>
-            ) : enquiries.length === 0 ? (
+            ) : safeEnquiries.length === 0 ? (
               <div className="text-center py-12 text-zinc-500 font-mono text-xs">No pending enquiries in queue.</div>
             ) : (
-              enquiries.map((e) => (
+              safeEnquiries.map((e) => (
                 <div key={e.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-3">
                     <div>

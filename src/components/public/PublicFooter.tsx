@@ -1,16 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Film, Camera, Globe, Mail, Phone, MapPin } from 'lucide-react';
+import { getMediaForSlot } from '../../lib/mediaResolver';
 
 export const PublicFooter: React.FC = () => {
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    getMediaForSlot('brand.logo').then((res) => {
+      if (isMounted && res.url) {
+        setLogoUrl(res.url);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <footer className="bg-zinc-950 border-t border-zinc-900 text-zinc-400 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand */}
         <div className="space-y-4 md:col-span-1">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center text-black font-black">
-              <Sparkles className="w-5 h-5 fill-black" />
-            </div>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Stargaze Media"
+                className="h-10 w-auto max-w-[120px] object-contain"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center text-black font-black">
+                <Sparkles className="w-5 h-5 fill-black" />
+              </div>
+            )}
             <span className="text-lg font-bold tracking-widest text-white uppercase font-mono">
               STARGAZE MEDIA
             </span>

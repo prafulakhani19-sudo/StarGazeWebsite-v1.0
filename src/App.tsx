@@ -20,7 +20,14 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { UserManagementPage } from './pages/admin/UserManagementPage';
 import { AdminProfilePage } from './pages/admin/AdminProfilePage';
 import { ActivityLogsPage } from './pages/admin/ActivityLogsPage';
-import { ProjectsAdminPage } from './pages/admin/ProjectsAdminPage';
+import { WorkAdminPage } from './pages/admin/WorkAdminPage';
+import { HeroAdminPage } from './pages/admin/HeroAdminPage';
+import { TeamAdminPage } from './pages/admin/TeamAdminPage';
+import { PartnersAdminPage } from './pages/admin/PartnersAdminPage';
+import { MarketingAdminPage } from './pages/admin/MarketingAdminPage';
+import { HomeContentAdminPage } from './pages/admin/HomeContentAdminPage';
+import { BrandSettingsAdminPage } from './pages/admin/BrandSettingsAdminPage';
+import { SEOSettingsAdminPage } from './pages/admin/SEOSettingsAdminPage';
 import { EquipmentAdminPage } from './pages/admin/EquipmentAdminPage';
 import { EventsAdminPage } from './pages/admin/EventsAdminPage';
 import { DistributionAdminPage } from './pages/admin/DistributionAdminPage';
@@ -52,11 +59,19 @@ export default function App() {
           <Route path="/admin/users" element={<UserManagementPage />} />
           <Route path="/admin/profile" element={<AdminProfilePage />} />
           <Route path="/admin/activity-logs" element={<ActivityLogsPage />} />
-          <Route path="/admin/projects" element={<ProjectsAdminPage />} />
+          <Route path="/admin/hero" element={<HeroAdminPage />} />
+          <Route path="/admin/projects" element={<WorkAdminPage />} />
+          <Route path="/admin/work" element={<WorkAdminPage />} />
           <Route path="/admin/equipment" element={<EquipmentAdminPage />} />
           <Route path="/admin/events" element={<EventsAdminPage />} />
+          <Route path="/admin/team" element={<TeamAdminPage />} />
+          <Route path="/admin/partners" element={<PartnersAdminPage />} />
+          <Route path="/admin/marketing" element={<MarketingAdminPage />} />
           <Route path="/admin/distribution" element={<DistributionAdminPage />} />
           <Route path="/admin/news" element={<NewsAdminPage />} />
+          <Route path="/admin/content/home" element={<HomeContentAdminPage />} />
+          <Route path="/admin/settings/brand" element={<BrandSettingsAdminPage />} />
+          <Route path="/admin/settings/seo" element={<SEOSettingsAdminPage />} />
           <Route path="/admin/media" element={<MediaLibraryPage />} />
           <Route path="/admin/enquiries" element={<EnquiriesAdminPage />} />
           <Route path="/admin/settings" element={<SettingsAdminPage />} />

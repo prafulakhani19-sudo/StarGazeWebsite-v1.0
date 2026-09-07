@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { INITIAL_DISTRIBUTION } from '../../data/mockData';
+import { DistributionTitle } from '../../types';
+import { resolveDistributionMedia } from '../../lib/mediaResolver';
+import { getDistribution } from '../../lib/cmsService';
 import { Globe } from 'lucide-react';
 import { StargazeImage } from '../../components/common/StargazeImage';
 
 export const DistributionPage: React.FC = () => {
-  const publishedDistribution = INITIAL_DISTRIBUTION.filter((d) => d.status === 'PUBLISHED');
+  const [distribution, setDistribution] = useState<DistributionTitle[]>(INITIAL_DISTRIBUTION);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const cmsData = await getDistribution();
+        const base = cmsData && cmsData.length > 0 ? cmsData : INITIAL_DISTRIBUTION;
+        const resolved = await Promise.all(base.map(resolveDistributionMedia));
+        if (isMounted) setDistribution(resolved);
+      } catch (err) {
+        console.warn('Error loading distribution, using defaults:', err);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const publishedDistribution = distribution.filter((d) => d.status === 'PUBLISHED');
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans">
@@ -26,7 +49,7 @@ export const DistributionPage: React.FC = () => {
           {publishedDistribution.map((item) => (
             <div key={item.id} className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 flex gap-6">
               <div className="w-32 aspect-[3/4] rounded-lg overflow-hidden shrink-0 bg-zinc-950">
-                <StargazeImage src={item.posterUrl} alt={item.title} className="w-full h-full object-cover" />
+                <StargazeImage src={item.posterUrl} alt={item.title} focalPoint={item.focalPoint} className="w-full h-full object-cover" />
               </div>
               <div className="space-y-3 flex-1">
                 <span className="text-xs font-mono text-amber-500 uppercase tracking-widest">{item.type}</span>

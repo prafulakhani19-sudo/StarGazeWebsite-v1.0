@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ChevronLeft, ChevronRight, Play, Film, Sparkles } from 'lucide-react';
 import { STARGAZE_MEDIA_REGISTRY } from '../../data/media';
 import { StargazeImage } from '../common/StargazeImage';
+import { getMediaForSlot } from '../../lib/mediaResolver';
+import { getHeroSlides } from '../../lib/cmsService';
 
 export interface HeroSlideData {
   id: string;
@@ -12,6 +14,8 @@ export interface HeroSlideData {
   description: string;
   desktopSrc: string;
   mobileSrc: string;
+  desktopFocalPoint?: { x: number; y: number };
+  mobileFocalPoint?: { x: number; y: number };
   primaryCtaText: string;
   primaryCtaLink: string;
   primaryCtaExternal?: boolean;
@@ -19,14 +23,14 @@ export interface HeroSlideData {
   secondaryCtaLink: string;
 }
 
-const HERO_SLIDES: HeroSlideData[] = [
+const INITIAL_HERO_SLIDES: HeroSlideData[] = [
   {
     id: 'stargaze',
     eyebrow: 'FLAGSHIP ENTERTAINMENT STUDIO',
     title: 'WE CREATE WHAT THE',
     highlightTitle: 'WORLD WATCHES',
     description: 'Production • Post-Production • Camera Equipment • Distribution • Entertainment Experiences',
-    desktopSrc: '', // Branded dark cinematic backdrop per Part 9
+    desktopSrc: '',
     mobileSrc: '',
     primaryCtaText: 'START A PROJECT',
     primaryCtaLink: '/enquiry',
@@ -73,11 +77,25 @@ const HERO_SLIDES: HeroSlideData[] = [
     secondaryCtaText: 'START ENQUIRY',
     secondaryCtaLink: '/enquiry',
   },
+  {
+    id: 'father-son',
+    eyebrow: '05 // LIVE ENTERTAINMENT & CINEMA',
+    title: 'FATHER & SON DUO',
+    highlightTitle: '(LIVE EXPERIENCE)',
+    description: 'An unforgettable musical journey featuring renowned artists Narayan Mohod & Satish Mohod. Production, audio, and visual spectacles by Orange City Production.',
+    desktopSrc: '',
+    mobileSrc: '',
+    primaryCtaText: 'EXPLORE EVENTS',
+    primaryCtaLink: '/events',
+    secondaryCtaText: 'BOOK PERFORMANCE',
+    secondaryCtaLink: '/enquiry',
+  },
 ];
 
 const SLIDE_DURATION = 8000; // 8 seconds
 
 export const HeroSlider: React.FC = () => {
+  const [slides, setSlides] = useState<HeroSlideData[]>(INITIAL_HERO_SLIDES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -85,19 +103,77 @@ export const HeroSlider: React.FC = () => {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  const currentSlide = HERO_SLIDES[currentIndex];
+  useEffect(() => {
+    async function resolveHeroMedia() {
+      let baseSlides: HeroSlideData[] = INITIAL_HERO_SLIDES;
+      try {
+        const cmsSlides = await getHeroSlides();
+        if (cmsSlides && cmsSlides.length > 0) {
+          baseSlides = cmsSlides.map((s) => ({
+            id: s.id,
+            eyebrow: s.eyebrow,
+            title: s.title,
+            highlightTitle: s.highlightTitle,
+            description: s.description,
+            desktopSrc: s.desktopSrc,
+            mobileSrc: s.mobileSrc,
+            desktopFocalPoint: s.desktopFocalPoint,
+            mobileFocalPoint: s.mobileFocalPoint,
+            primaryCtaText: s.primaryCtaText,
+            primaryCtaLink: s.primaryCtaLink,
+            primaryCtaExternal: s.primaryCtaExternal,
+            secondaryCtaText: s.secondaryCtaText,
+            secondaryCtaLink: s.secondaryCtaLink,
+          }));
+        }
+      } catch (err) {
+        console.warn('Using default hero slides:', err);
+      }
+
+      const resolvedSlides = await Promise.all(
+        baseSlides.map(async (slide) => {
+          if (slide.id === 'stargaze') return slide;
+          const slotName = slide.id === 'nayi-soch'
+            ? 'nayiSoch'
+            : slide.id === 'psycho'
+            ? 'psycho'
+            : slide.id === 'saheb-vikaskari'
+            ? 'sahebVikaskari'
+            : 'fatherSon';
+          const desktopSlot = `hero.${slotName}.desktop`;
+          const mobileSlot = `hero.${slotName}.mobile`;
+
+          const resDesktop = await getMediaForSlot(desktopSlot, slide.desktopSrc);
+          const resMobile = await getMediaForSlot(mobileSlot, slide.mobileSrc);
+
+          return {
+            ...slide,
+            desktopSrc: resDesktop.url || slide.desktopSrc,
+            mobileSrc: resMobile.url || slide.mobileSrc,
+            desktopFocalPoint: resDesktop.focalPoint || slide.desktopFocalPoint,
+            mobileFocalPoint: resMobile.focalPoint || slide.mobileFocalPoint,
+          };
+        })
+      );
+      setSlides(resolvedSlides);
+    }
+    resolveHeroMedia();
+  }, []);
+
+  const safeSlides = slides.length > 0 ? slides : INITIAL_HERO_SLIDES;
+  const currentSlide = safeSlides[currentIndex] || safeSlides[0];
 
   const handleNext = useCallback(() => {
     setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % HERO_SLIDES.length);
+    setCurrentIndex((prev) => (prev + 1) % safeSlides.length);
     setProgress(0);
-  }, []);
+  }, [safeSlides.length]);
 
   const handlePrev = useCallback(() => {
     setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+    setCurrentIndex((prev) => (prev - 1 + safeSlides.length) % safeSlides.length);
     setProgress(0);
-  }, []);
+  }, [safeSlides.length]);
 
   const handleSelect = (index: number) => {
     setDirection(index > currentIndex ? 1 : -1);
@@ -200,6 +276,7 @@ export const HeroSlider: React.FC = () => {
                 <StargazeImage
                   src={currentSlide.desktopSrc}
                   alt={currentSlide.title}
+                  focalPoint={currentSlide.desktopFocalPoint}
                   className="w-full h-full object-cover transition-transform duration-1000"
                 />
               ) : (
@@ -212,6 +289,7 @@ export const HeroSlider: React.FC = () => {
                 <StargazeImage
                   src={currentSlide.mobileSrc}
                   alt={currentSlide.title}
+                  focalPoint={currentSlide.mobileFocalPoint}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -298,12 +376,12 @@ export const HeroSlider: React.FC = () => {
           <div className="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-start">
             {/* Counter */}
             <div className="font-mono text-sm tracking-widest text-[#E5C158] font-bold">
-              0{currentIndex + 1} <span className="text-zinc-500 font-normal">/ 0{HERO_SLIDES.length}</span>
+              0{currentIndex + 1} <span className="text-zinc-500 font-normal">/ 0{safeSlides.length}</span>
             </div>
 
             {/* Progress indicators */}
             <div className="flex items-center gap-2">
-              {HERO_SLIDES.map((slide, idx) => (
+              {safeSlides.map((slide, idx) => (
                 <div
                   key={slide.id}
                   onClick={() => handleSelect(idx)}
@@ -326,7 +404,7 @@ export const HeroSlider: React.FC = () => {
 
           {/* Center / Right: Cinematic Thumbnail Navigation */}
           <div className="hidden md:flex items-center gap-3">
-            {HERO_SLIDES.map((slide, idx) => {
+            {slides.map((slide, idx) => {
               const isActive = idx === currentIndex;
               return (
                 <button

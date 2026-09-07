@@ -86,7 +86,9 @@ export const UserModal: React.FC<UserModalProps> = ({
     }
   };
 
-  const currentSummary = ROLE_SUMMARIES[role];
+  const currentSummary = ROLE_SUMMARIES[role] || { can: [], cannot: [] };
+  const canList = currentSummary.can || [];
+  const cannotList = currentSummary.cannot || [];
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto font-sans">
@@ -228,7 +230,7 @@ export const UserModal: React.FC<UserModalProps> = ({
                   <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase block">
                     Can manage:
                   </span>
-                  {currentSummary.can.map((item, idx) => (
+                  {canList.map((item, idx) => (
                     <div key={idx} className="flex items-start gap-1.5 text-zinc-300">
                       <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                       <span>{item}</span>
@@ -236,12 +238,12 @@ export const UserModal: React.FC<UserModalProps> = ({
                   ))}
                 </div>
 
-                {currentSummary.cannot.length > 0 && (
+                {cannotList.length > 0 && (
                   <div className="space-y-1 border-t sm:border-t-0 sm:border-l border-zinc-800 pt-2 sm:pt-0 sm:pl-3">
                     <span className="text-[10px] font-mono text-red-400 font-bold uppercase block">
                       Cannot manage:
                     </span>
-                    {currentSummary.cannot.map((item, idx) => (
+                    {cannotList.map((item, idx) => (
                       <div key={idx} className="flex items-start gap-1.5 text-zinc-400">
                         <X className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
                         <span>{item}</span>

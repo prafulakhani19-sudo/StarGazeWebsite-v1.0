@@ -31,12 +31,14 @@ export const ActivityLogsPage: React.FC = () => {
     fetchLogs();
   }, []);
 
-  const filteredLogs = logs.filter((log) => {
-    const q = searchTerm.toLowerCase();
+  const safeLogs = Array.isArray(logs) ? logs : [];
+  const filteredLogs = safeLogs.filter((log) => {
+    if (!log) return false;
+    const q = (searchTerm || '').toLowerCase();
     return (
-      log.actorName?.toLowerCase().includes(q) ||
-      log.action?.toLowerCase().includes(q) ||
-      log.entityType?.toLowerCase().includes(q)
+      (log.actorName || '').toLowerCase().includes(q) ||
+      (log.action || '').toLowerCase().includes(q) ||
+      (log.entityType || '').toLowerCase().includes(q)
     );
   });
 

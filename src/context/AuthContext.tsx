@@ -4,7 +4,7 @@ import {
   onAuthStateChanged,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
 import { Permission, Role, UserProfile } from '../types';
 import { hasPermission } from '../permissions';
@@ -29,10 +29,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUserProfile = async (uid: string): Promise<UserProfile | null> => {
+  const fetchUserProfile = async (uid: string, userEmail?: string): Promise<UserProfile | null> => {
     try {
       const userDocRef = doc(db, 'users', uid);
-      const docSnap = await getDoc(userDocRef);
+      let docSnap = await getDoc(userDocRef);
+
+      // Fallback: If doc doesn't exist under UID yet, check by email and migrate/link it
+      if (!docSnap.exists() && userEmail) {
+        try {
+          const q = query(collection(db, 'users'), where('email', '==', userEmail.trim().toLowerCase()));
+          const emailSnap = await getDocs(q);
+          if (!emailSnap.empty) {
+            const existingData = emailSnap.docs[0].data() as UserProfile;
+            const migratedProfile = { ...existingData, id: uid };
+            await setDoc(userDocRef, migratedProfile, { merge: true });
+            docSnap = await getDoc(userDocRef);
+          }
+        } catch (e) {
+          console.warn('Could not query users by email fallback:', e);
+        }
+      }
 
       if (docSnap.exists()) {
         const data = docSnap.data() as UserProfile;
@@ -67,34 +83,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const setSession = (userProfile: UserProfile, token: string) => {
     localStorage.setItem('stargaze_auth_token', token);
     localStorage.setItem('stargaze_auth_user', JSON.stringify(userProfile));
-    setUser({ uid: userProfile.id, email: userProfile.email, displayName: userProfile.displayName });
-    setProfile(userProfile);
   };
 
   useEffect(() => {
-    // Check fallback session first
-    const savedToken = localStorage.getItem('stargaze_auth_token');
-    const savedUserJson = localStorage.getItem('stargaze_auth_user');
-
-    if (savedToken && savedUserJson) {
-      try {
-        const parsedProfile = JSON.parse(savedUserJson);
-        setUser({ uid: parsedProfile.id, email: parsedProfile.email, displayName: parsedProfile.displayName });
-        setProfile(parsedProfile);
-        // Refresh latest profile from Firestore silently
-        fetchUserProfile(parsedProfile.id).catch(() => {});
-      } catch (e) {
-        console.warn('Failed to parse saved auth profile:', e);
-      }
-    }
-
+    // Canonical Firebase Auth session listener - source of truth
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        await fetchUserProfile(currentUser.uid);
-      } else if (!localStorage.getItem('stargaze_auth_token')) {
+        await fetchUserProfile(currentUser.uid, currentUser.email || undefined);
+      } else {
+        // Unauthenticated in Firebase Auth -> Clear all session states
         setUser(null);
         setProfile(null);
+        localStorage.removeItem('stargaze_auth_token');
+        localStorage.removeItem('stargaze_auth_user');
       }
       setLoading(false);
     });
@@ -103,9 +105,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const refreshProfile = async () => {
-    const currentUid = user?.uid || profile?.id;
+    const currentUid = auth.currentUser?.uid || user?.uid;
     if (currentUid) {
-      const updated = await fetchUserProfile(currentUid);
+      const updated = await fetchUserProfile(currentUid, auth.currentUser?.email || user?.email);
       if (updated) {
         localStorage.setItem('stargaze_auth_user', JSON.stringify(updated));
       }

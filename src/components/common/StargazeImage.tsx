@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
 interface StargazeImageProps {
   src: string;
@@ -8,6 +7,9 @@ interface StargazeImageProps {
   height?: number;
   className?: string;
   objectPosition?: string;
+  focalPoint?: { x: number; y: number };
+  fallbackTitle?: string;
+  category?: string;
   priority?: boolean;
 }
 
@@ -18,10 +20,21 @@ export const StargazeImage: React.FC<StargazeImageProps> = ({
   height,
   className = '',
   objectPosition = 'center',
+  focalPoint,
   priority = false,
 }) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Reset error and loading whenever the image source URL changes
+  useEffect(() => {
+    setHasError(false);
+    setIsLoading(Boolean(src && src.trim() !== ''));
+  }, [src]);
+
+  const computedPosition = focalPoint
+    ? `${focalPoint.x}% ${focalPoint.y}%`
+    : objectPosition;
 
   const handleError = () => {
     if (!hasError) {
@@ -35,7 +48,7 @@ export const StargazeImage: React.FC<StargazeImageProps> = ({
     return (
       <div
         className={`bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center ${className}`}
-        style={{ objectPosition }}
+        style={{ objectPosition: computedPosition }}
       />
     );
   }
@@ -60,7 +73,7 @@ export const StargazeImage: React.FC<StargazeImageProps> = ({
         className={`w-full h-full object-cover transition-opacity duration-500 ${
           isLoading ? 'opacity-0' : 'opacity-100'
         }`}
-        style={{ objectPosition }}
+        style={{ objectPosition: computedPosition }}
       />
     </div>
   );

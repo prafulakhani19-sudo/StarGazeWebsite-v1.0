@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Menu, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullscreenNavOverlay } from './FullscreenNavOverlay';
 import { STARGAZE_LOGO_PATH } from '../../data/media';
+import { getMediaForSlot } from '../../lib/mediaResolver';
 
 export const PublicHeader: React.FC = () => {
   const [navOverlayOpen, setNavOverlayOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string>('');
+  const [logoAlt, setLogoAlt] = useState<string>('Stargaze Media & Entertainment');
   const [logoError, setLogoError] = useState(false);
   const { user, profile } = useAuth();
+
+  useEffect(() => {
+    let isMounted = true;
+    getMediaForSlot('brand.logo').then((res) => {
+      if (isMounted && res.url) {
+        setLogoUrl(res.url);
+        if (res.alt) setLogoAlt(res.alt);
+        setLogoError(false);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>
@@ -16,16 +33,18 @@ export const PublicHeader: React.FC = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3.5 group" data-cursor="VIEW">
-              <div className="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E5C158] to-amber-200 flex items-center justify-center text-black font-extrabold shadow-lg shadow-[#E5C158]/20 group-hover:scale-105 transition overflow-hidden">
-                {!logoError ? (
+              <div className="relative h-11 w-11 rounded-xl bg-zinc-900 border border-[#E5C158]/30 flex items-center justify-center text-black font-extrabold shadow-lg shadow-[#E5C158]/10 group-hover:border-[#E5C158] group-hover:scale-105 transition overflow-hidden p-1">
+                {logoUrl && !logoError ? (
                   <img
-                    src={STARGAZE_LOGO_PATH}
-                    alt="Stargaze Media & Entertainment"
+                    src={logoUrl}
+                    alt={logoAlt}
                     className="w-full h-full object-contain"
                     onError={() => setLogoError(true)}
                   />
                 ) : (
-                  <Sparkles className="w-5 h-5 fill-black text-black" />
+                  <div className="w-full h-full bg-gradient-to-tr from-[#E5C158] to-amber-200 flex items-center justify-center rounded-lg">
+                    <Sparkles className="w-5 h-5 fill-black text-black" />
+                  </div>
                 )}
               </div>
               <div>

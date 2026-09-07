@@ -24,12 +24,15 @@ import {
   Shield,
   Menu,
   X,
+  Tag,
+  Palette,
 } from 'lucide-react';
 
 interface SidebarItem {
   label: string;
   path: string;
   icon: React.ElementType;
+  section: 'OVERVIEW' | 'CONTENT CMS' | 'SYSTEM & CONTROLS';
   permission?: Permission;
   superAdminOnly?: boolean;
 }
@@ -42,17 +45,28 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
   const role = profile?.role || 'VIEWER';
 
   const navItems: SidebarItem[] = [
-    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, permission: 'dashboard.view' },
-    { label: 'Users', path: '/admin/users', icon: Users, superAdminOnly: true },
-    { label: 'Projects Slate', path: '/admin/projects', icon: Film, permission: 'projects.view' },
-    { label: 'Media Library', path: '/admin/media', icon: Camera, permission: 'projects.view' },
-    { label: 'Equipment Rental', path: '/admin/equipment', icon: Camera, permission: 'equipment.view' },
-    { label: 'Events & Premieres', path: '/admin/events', icon: Calendar, permission: 'events.view' },
-    { label: 'Distribution', path: '/admin/distribution', icon: Globe, permission: 'distribution.view' },
-    { label: 'Newsroom & PR', path: '/admin/news', icon: Newspaper, permission: 'news.view' },
-    { label: 'Studio Enquiries', path: '/admin/enquiries', icon: Mail, permission: 'enquiries.view' },
-    { label: 'Activity Logs', path: '/admin/activity-logs', icon: History, permission: 'activity_logs.view' },
-    { label: 'Site Settings', path: '/admin/settings', icon: Sliders, permission: 'settings.view' },
+    // Overview
+    { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, section: 'OVERVIEW', permission: 'dashboard.view' },
+    { label: 'Media Library', path: '/admin/media', icon: Camera, section: 'OVERVIEW', permission: 'projects.view' },
+
+    // Content CMS
+    { label: 'Hero Screening Wall', path: '/admin/hero', icon: Sparkles, section: 'CONTENT CMS', permission: 'projects.view' },
+    { label: 'Cinema Slate & Work', path: '/admin/projects', icon: Film, section: 'CONTENT CMS', permission: 'projects.view' },
+    { label: 'Events & Premieres', path: '/admin/events', icon: Calendar, section: 'CONTENT CMS', permission: 'events.view' },
+    { label: 'Equipment Catalog', path: '/admin/equipment', icon: Camera, section: 'CONTENT CMS', permission: 'equipment.view' },
+    { label: 'Team & Leadership', path: '/admin/team', icon: Users, section: 'CONTENT CMS', permission: 'projects.view' },
+    { label: 'Industry Partners', path: '/admin/partners', icon: UserCheck, section: 'CONTENT CMS', permission: 'projects.view' },
+    { label: 'Marketing & PR', path: '/admin/marketing', icon: Tag, section: 'CONTENT CMS', permission: 'projects.view' },
+    { label: 'Newsroom Articles', path: '/admin/news', icon: Newspaper, section: 'CONTENT CMS', permission: 'news.view' },
+    { label: 'Homepage Narrative', path: '/admin/content/home', icon: Globe, section: 'CONTENT CMS', permission: 'settings.view' },
+
+    // System & Settings
+    { label: 'Brand & Logos', path: '/admin/settings/brand', icon: Palette, section: 'SYSTEM & CONTROLS', permission: 'settings.view' },
+    { label: 'SEO & Social Card', path: '/admin/settings/seo', icon: Search, section: 'SYSTEM & CONTROLS', permission: 'settings.view' },
+    { label: 'Studio Enquiries', path: '/admin/enquiries', icon: Mail, section: 'SYSTEM & CONTROLS', permission: 'enquiries.view' },
+    { label: 'Activity Logs', path: '/admin/activity-logs', icon: History, section: 'SYSTEM & CONTROLS', permission: 'activity_logs.view' },
+    { label: 'User Accounts', path: '/admin/users', icon: Users, section: 'SYSTEM & CONTROLS', superAdminOnly: true },
+    { label: 'Global Settings', path: '/admin/settings', icon: Sliders, section: 'SYSTEM & CONTROLS', permission: 'settings.view' },
   ];
 
   // Filter items based on user permissions & super admin restrictions
@@ -187,28 +201,36 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             mobileSidebarOpen ? 'fixed inset-y-16 left-0 bg-zinc-950 w-64 shadow-2xl' : 'hidden md:flex'
           }`}
         >
-          <div className="p-4 space-y-1 overflow-y-auto">
-            <div className="px-3 py-2 text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-              NAVIGATION MODULES
-            </div>
-
-            {filteredNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = window.location.pathname === item.path;
+          <div className="p-4 space-y-4 overflow-y-auto">
+            {(['OVERVIEW', 'CONTENT CMS', 'SYSTEM & CONTROLS'] as const).map((sectionTitle) => {
+              const sectionItems = filteredNavItems.filter((item) => item.section === sectionTitle);
+              if (sectionItems.length === 0) return null;
 
               return (
-                <a
-                  key={item.path}
-                  href={item.path}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-xs font-medium transition ${
-                    isActive
-                      ? 'bg-amber-500 text-zinc-950 font-bold shadow-md shadow-amber-500/10'
-                      : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white'
-                  }`}
-                >
-                  <Icon className={`w-4 h-4 ${isActive ? 'text-zinc-950' : 'text-amber-500/80'}`} />
-                  <span>{item.label}</span>
-                </a>
+                <div key={sectionTitle} className="space-y-1">
+                  <div className="px-3 py-1 text-[9px] font-mono font-bold tracking-widest text-zinc-500 uppercase">
+                    {sectionTitle}
+                  </div>
+                  {sectionItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = window.location.pathname === item.path;
+
+                    return (
+                      <a
+                        key={item.path}
+                        href={item.path}
+                        className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium transition ${
+                          isActive
+                            ? 'bg-amber-500 text-zinc-950 font-bold shadow-md shadow-amber-500/10'
+                            : 'text-zinc-400 hover:bg-zinc-800/80 hover:text-white'
+                        }`}
+                      >
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-zinc-950' : 'text-amber-500/80'}`} />
+                        <span>{item.label}</span>
+                      </a>
+                    );
+                  })}
+                </div>
               );
             })}
           </div>

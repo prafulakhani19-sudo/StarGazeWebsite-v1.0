@@ -2,31 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { ProtectedRoute } from '../../components/common/ProtectedRoute';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { 
-  getNewsArticles, saveCmsDocument, deleteCmsDocument, reorderCmsDocuments 
+  getPartners, saveCmsDocument, deleteCmsDocument, reorderCmsDocuments 
 } from '../../lib/cmsService';
-import { NewsArticle, ContentStatus } from '../../types';
+import { PartnerItem, ContentStatus } from '../../types';
 import { MediaPickerModal } from '../../components/admin/MediaPickerModal';
 import { StargazeImage } from '../../components/common/StargazeImage';
 import { 
-  Newspaper, Plus, Edit3, Trash2, ArrowUp, ArrowDown, Check, X, 
-  RefreshCw, Image as ImageIcon, AlertCircle, Calendar 
+  UserCheck, Plus, Edit3, Trash2, ArrowUp, ArrowDown, Check, X, 
+  RefreshCw, Image as ImageIcon, AlertCircle, ExternalLink 
 } from 'lucide-react';
 
-export const NewsAdminPage: React.FC = () => {
-  const [articles, setArticles] = useState<NewsArticle[]>([]);
+export const PartnersAdminPage: React.FC = () => {
+  const [partners, setPartners] = useState<PartnerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [editingArticle, setEditingArticle] = useState<Partial<NewsArticle> | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<NewsArticle | null>(null);
+  const [editingPartner, setEditingPartner] = useState<Partial<PartnerItem> | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<PartnerItem | null>(null);
   const [showMediaPicker, setShowMediaPicker] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await getNewsArticles();
-      setArticles(data);
+      const data = await getPartners();
+      setPartners(data);
     } catch (err) {
-      console.error('Error loading news articles:', err);
+      console.error('Error loading partners:', err);
     } finally {
       setLoading(false);
     }
@@ -38,153 +38,154 @@ export const NewsAdminPage: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingArticle || !editingArticle.title) return;
+    if (!editingPartner || !editingPartner.name) return;
     setSaving(true);
 
     try {
-      const id = editingArticle.id || `news-${Date.now()}`;
-      const payload: NewsArticle = {
-        id,
-        title: editingArticle.title || '',
-        category: editingArticle.category || 'Press Release',
-        publishDate: editingArticle.publishDate || new Date().toISOString().split('T')[0],
-        summary: editingArticle.summary || '',
-        content: editingArticle.content || '',
-        author: editingArticle.author || 'Stargaze Editorial',
-        imageUrl: editingArticle.imageUrl || '',
-        imageMediaId: editingArticle.imageMediaId || '',
-        status: editingArticle.status || 'PUBLISHED',
-        displayOrder: editingArticle.displayOrder ?? (articles.length + 1),
-        focalPoint: editingArticle.focalPoint || { x: 50, y: 50 },
+      const partnerId = editingPartner.id || `partner-${Date.now()}`;
+      const payload: PartnerItem = {
+        id: partnerId,
+        name: editingPartner.name || '',
+        category: editingPartner.category || 'Production Partner',
+        logoUrl: editingPartner.logoUrl || '',
+        logoMediaId: editingPartner.logoMediaId || '',
+        websiteUrl: editingPartner.websiteUrl || '',
+        description: editingPartner.description || '',
+        displayOrder: editingPartner.displayOrder ?? (partners.length + 1),
+        status: editingPartner.status || 'PUBLISHED',
         updatedAt: new Date().toISOString(),
       };
 
-      await saveCmsDocument('news', id, payload, 'SAVE_NEWS_ARTICLE');
+      await saveCmsDocument('partners', partnerId, payload, 'SAVE_PARTNER');
       await loadData();
-      setEditingArticle(null);
+      setEditingPartner(null);
     } catch (err) {
-      console.error('Error saving news article:', err);
-      alert('Failed to save news article');
+      console.error('Error saving partner:', err);
+      alert('Failed to save partner');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (item: NewsArticle) => {
+  const handleDelete = async (partner: PartnerItem) => {
     try {
-      await deleteCmsDocument('news', item.id);
+      await deleteCmsDocument('partners', partner.id);
       await loadData();
       setDeleteConfirm(null);
     } catch (err) {
-      console.error('Error deleting news article:', err);
-      alert('Failed to delete article');
+      console.error('Error deleting partner:', err);
+      alert('Failed to delete partner');
     }
   };
 
   const handleMove = async (index: number, direction: 'up' | 'down') => {
     const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= articles.length) return;
+    if (targetIndex < 0 || targetIndex >= partners.length) return;
 
-    const reordered = [...articles];
+    const reordered = [...partners];
     const [moved] = reordered.splice(index, 1);
     reordered.splice(targetIndex, 0, moved);
 
-    setArticles(reordered);
-    await reorderCmsDocuments('news', reordered.map((a) => a.id));
+    setPartners(reordered);
+    await reorderCmsDocuments('partners', reordered.map((p) => p.id));
   };
 
   return (
-    <ProtectedRoute requiredPermission="news.view">
+    <ProtectedRoute requiredPermission="projects.view">
       <AdminLayout>
         <div className="space-y-6 font-sans">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-900 pb-6">
             <div>
               <div className="inline-flex items-center gap-2 text-amber-500 font-mono text-xs tracking-widest uppercase mb-1">
-                <Newspaper className="w-4 h-4" /> PRESS OFFICE & EDITORIAL
+                <UserCheck className="w-4 h-4" /> ALLIANCES & DISTRIBUTION
               </div>
-              <h1 className="text-3xl font-extrabold text-white uppercase font-mono">NEWSROOM CMS</h1>
+              <h1 className="text-3xl font-extrabold text-white uppercase font-mono">INDUSTRY PARTNERS CMS</h1>
               <p className="text-xs text-zinc-400 mt-1">
-                Manage press releases, studio announcements, festival laureates, and marketing articles.
+                Manage partner brandings, studio alliances, network logos, and exact naming (e.g. Hungama Media Group / Orange City Production).
               </p>
             </div>
 
             <button
               onClick={() =>
-                setEditingArticle({
-                  title: '',
-                  category: 'Press Release',
-                  publishDate: new Date().toISOString().split('T')[0],
-                  author: 'Stargaze Editorial',
+                setEditingPartner({
+                  name: '',
+                  category: 'Production Partner',
                   status: 'PUBLISHED',
-                  displayOrder: articles.length + 1,
-                  focalPoint: { x: 50, y: 50 },
+                  displayOrder: partners.length + 1,
                 })
               }
               className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs uppercase rounded-xl flex items-center gap-2 font-mono transition shadow-lg shadow-amber-500/10"
             >
-              <Plus className="w-4 h-4" /> Create Article
+              <Plus className="w-4 h-4" /> Add Industry Partner
             </button>
           </div>
 
-          {/* Articles Grid */}
+          {/* Partner Grid */}
           {loading ? (
             <div className="text-center py-20 text-zinc-500 font-mono text-sm flex flex-col items-center gap-3">
               <RefreshCw className="w-6 h-6 animate-spin text-amber-400" />
-              <span>Loading Newsroom Articles...</span>
+              <span>Loading Partner Roster...</span>
             </div>
-          ) : articles.length === 0 ? (
+          ) : partners.length === 0 ? (
             <div className="text-center py-20 bg-zinc-900/40 border border-zinc-800 rounded-2xl space-y-3">
-              <Newspaper className="w-12 h-12 text-zinc-600 mx-auto" />
-              <h3 className="text-white font-bold text-base">No Articles Found</h3>
+              <UserCheck className="w-12 h-12 text-zinc-600 mx-auto" />
+              <h3 className="text-white font-bold text-base">No Partners Found</h3>
               <p className="text-zinc-500 text-xs max-w-sm mx-auto">
-                Publish your first studio announcement or press dispatch.
+                Add broadcast partners, OTT platforms, co-producers, and sponsors.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {articles.map((art, idx) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {partners.map((partner, idx) => (
                 <div
-                  key={art.id}
+                  key={partner.id}
                   className="bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 rounded-2xl overflow-hidden p-5 flex flex-col justify-between space-y-4 transition"
                 >
                   <div className="space-y-3">
-                    <div className="aspect-[16/9] rounded-xl overflow-hidden bg-black border border-zinc-800 relative">
-                      {art.imageUrl ? (
-                        <StargazeImage
-                          src={art.imageUrl}
-                          alt={art.title}
-                          focalPoint={art.focalPoint}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs font-mono text-zinc-600">
-                          No Visual
-                        </div>
-                      )}
-                      <div className="absolute top-2 left-2">
-                        <span className="px-2 py-0.5 rounded bg-black/80 backdrop-blur-md border border-white/10 text-[10px] font-mono text-amber-400 uppercase">
-                          {art.category}
-                        </span>
+                    <div className="flex items-center gap-4">
+                      <div className="w-24 h-16 rounded-xl overflow-hidden bg-black/60 border border-zinc-800 shrink-0 flex items-center justify-center p-2 relative">
+                        {partner.logoUrl ? (
+                          <StargazeImage
+                            src={partner.logoUrl}
+                            alt={partner.name}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-[10px] text-zinc-600 font-mono">No Logo</span>
+                        )}
                       </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center text-[10px] font-mono text-zinc-500 mb-1">
-                        <span>{art.publishDate} • By {art.author || 'Editorial'}</span>
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono text-amber-400 uppercase font-bold tracking-wider">
+                          0{idx + 1} // {partner.category}
+                        </span>
+                        <h3 className="text-base font-bold text-white uppercase">{partner.name}</h3>
                         <span
-                          className={`px-2 py-0.5 rounded uppercase font-bold text-[9px] ${
-                            art.status === 'PUBLISHED'
+                          className={`text-[9px] font-mono px-2 py-0.5 rounded uppercase font-bold inline-block ${
+                            partner.status === 'PUBLISHED'
                               ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                               : 'bg-zinc-800 text-zinc-400'
                           }`}
                         >
-                          {art.status}
+                          {partner.status}
                         </span>
                       </div>
-                      <h3 className="text-base font-bold text-white uppercase">{art.title}</h3>
-                      <p className="text-xs text-zinc-400 line-clamp-2 mt-1">{art.summary}</p>
                     </div>
+
+                    {partner.description && (
+                      <p className="text-xs text-zinc-400 line-clamp-2">{partner.description}</p>
+                    )}
+
+                    {partner.websiteUrl && (
+                      <a
+                        href={partner.websiteUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-mono text-amber-400/80 hover:text-amber-300"
+                      >
+                        <ExternalLink className="w-3 h-3" /> Visit Partner URL
+                      </a>
+                    )}
                   </div>
 
                   <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
@@ -199,7 +200,7 @@ export const NewsAdminPage: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleMove(idx, 'down')}
-                        disabled={idx === articles.length - 1}
+                        disabled={idx === partners.length - 1}
                         className="p-1 rounded bg-zinc-800 hover:bg-zinc-700 disabled:opacity-30 text-zinc-300"
                         title="Move Down"
                       >
@@ -209,16 +210,16 @@ export const NewsAdminPage: React.FC = () => {
 
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setEditingArticle(art)}
+                        onClick={() => setEditingPartner(partner)}
                         className="p-1.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-400"
-                        title="Edit Article"
+                        title="Edit Partner"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => setDeleteConfirm(art)}
+                        onClick={() => setDeleteConfirm(partner)}
                         className="p-1.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-400"
-                        title="Delete Article"
+                        title="Delete Partner"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -230,23 +231,23 @@ export const NewsAdminPage: React.FC = () => {
           )}
 
           {/* Edit / Create Modal */}
-          {editingArticle && (
+          {editingPartner && (
             <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-2xl w-full p-6 md:p-8 space-y-6 text-white my-8 shadow-2xl">
+              <div className="bg-zinc-950 border border-zinc-800 rounded-3xl max-w-xl w-full p-6 md:p-8 space-y-6 text-white my-8 shadow-2xl">
                 <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                      <Newspaper className="w-5 h-5" />
+                      <UserCheck className="w-5 h-5" />
                     </div>
                     <div>
                       <h2 className="text-lg font-bold font-mono uppercase">
-                        {editingArticle.id ? 'Edit News Article' : 'Create News Article'}
+                        {editingPartner.id ? 'Edit Partner Entry' : 'Add Partner Entry'}
                       </h2>
-                      <p className="text-xs text-zinc-400">Press release, feature, or announcement</p>
+                      <p className="text-xs text-zinc-400">Alliance, co-producer, or distribution label</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => setEditingArticle(null)}
+                    onClick={() => setEditingPartner(null)}
                     className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800"
                   >
                     <X className="w-5 h-5" />
@@ -255,44 +256,36 @@ export const NewsAdminPage: React.FC = () => {
 
                 <form onSubmit={handleSave} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-mono text-zinc-400 mb-1">Headline / Title *</label>
+                    <label className="block text-xs font-mono text-zinc-400 mb-1">
+                      Partner / Organization Name *
+                    </label>
                     <input
                       type="text"
                       required
-                      value={editingArticle.title || ''}
-                      onChange={(e) => setEditingArticle({ ...editingArticle, title: e.target.value })}
-                      placeholder="e.g. Stargaze Media Acquires RED V-Raptor 8K Camera Package"
+                      value={editingPartner.name || ''}
+                      onChange={(e) => setEditingPartner({ ...editingPartner, name: e.target.value })}
+                      placeholder="e.g. Hungama Media Group, Orange City Production"
                       className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-1">Category</label>
+                      <label className="block text-xs font-mono text-zinc-400 mb-1">Alliance Category</label>
                       <input
                         type="text"
-                        value={editingArticle.category || ''}
-                        onChange={(e) => setEditingArticle({ ...editingArticle, category: e.target.value })}
-                        placeholder="e.g. Press Release, Technology"
+                        value={editingPartner.category || ''}
+                        onChange={(e) => setEditingPartner({ ...editingPartner, category: e.target.value })}
+                        placeholder="e.g. Distribution Partner, Co-Producer, Media"
                         className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-mono text-zinc-400 mb-1">Publish Date</label>
-                      <input
-                        type="date"
-                        value={editingArticle.publishDate || ''}
-                        onChange={(e) => setEditingArticle({ ...editingArticle, publishDate: e.target.value })}
-                        className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500 font-mono"
                       />
                     </div>
 
                     <div>
                       <label className="block text-xs font-mono text-zinc-400 mb-1">Status</label>
                       <select
-                        value={editingArticle.status || 'PUBLISHED'}
-                        onChange={(e) => setEditingArticle({ ...editingArticle, status: e.target.value as ContentStatus })}
+                        value={editingPartner.status || 'PUBLISHED'}
+                        onChange={(e) => setEditingPartner({ ...editingPartner, status: e.target.value as ContentStatus })}
                         className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500 font-mono"
                       >
                         <option value="PUBLISHED">PUBLISHED</option>
@@ -302,11 +295,11 @@ export const NewsAdminPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Artwork Image Picker */}
+                  {/* Logo Picker */}
                   <div className="p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-3">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
-                        <ImageIcon className="w-3.5 h-3.5 text-amber-400" /> Article Hero Artwork
+                        <ImageIcon className="w-3.5 h-3.5 text-amber-400" /> Partner Logo
                       </span>
                       <button
                         type="button"
@@ -318,48 +311,45 @@ export const NewsAdminPage: React.FC = () => {
                     </div>
 
                     <div className="flex gap-4 items-center">
-                      <div className="w-28 h-18 bg-black border border-zinc-800 rounded-xl overflow-hidden shrink-0">
-                        {editingArticle.imageUrl ? (
+                      <div className="w-24 h-16 bg-black border border-zinc-800 rounded-xl overflow-hidden shrink-0 flex items-center justify-center p-2">
+                        {editingPartner.logoUrl ? (
                           <StargazeImage
-                            src={editingArticle.imageUrl}
-                            alt="Preview"
-                            focalPoint={editingArticle.focalPoint}
-                            className="w-full h-full object-cover"
+                            src={editingPartner.logoUrl}
+                            alt="Logo"
+                            className="max-w-full max-h-full object-contain"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-600 font-mono">
-                            No Photo
-                          </div>
+                          <div className="text-[10px] text-zinc-600 font-mono">No Logo</div>
                         )}
                       </div>
                       <input
                         type="text"
-                        placeholder="Image URL or pick from library..."
-                        value={editingArticle.imageUrl || ''}
-                        onChange={(e) => setEditingArticle({ ...editingArticle, imageUrl: e.target.value })}
+                        placeholder="Logo image URL or pick from library..."
+                        value={editingPartner.logoUrl || ''}
+                        onChange={(e) => setEditingPartner({ ...editingPartner, logoUrl: e.target.value })}
                         className="w-full px-3 py-2 bg-black border border-zinc-800 rounded-xl text-xs text-zinc-300 font-mono"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-zinc-400 mb-1">Executive Summary / Excerpt</label>
-                    <textarea
-                      rows={2}
-                      value={editingArticle.summary || ''}
-                      onChange={(e) => setEditingArticle({ ...editingArticle, summary: e.target.value })}
-                      placeholder="Brief lead paragraph..."
-                      className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500"
+                    <label className="block text-xs font-mono text-zinc-400 mb-1">Partner Website URL (Optional)</label>
+                    <input
+                      type="text"
+                      value={editingPartner.websiteUrl || ''}
+                      onChange={(e) => setEditingPartner({ ...editingPartner, websiteUrl: e.target.value })}
+                      placeholder="e.g. https://hungama.com"
+                      className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500 font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono text-zinc-400 mb-1">Full Article Content</label>
+                    <label className="block text-xs font-mono text-zinc-400 mb-1">Collaboration Summary (Optional)</label>
                     <textarea
-                      rows={5}
-                      value={editingArticle.content || ''}
-                      onChange={(e) => setEditingArticle({ ...editingArticle, content: e.target.value })}
-                      placeholder="Full editorial text, quotes, and background notes..."
+                      rows={2}
+                      value={editingPartner.description || ''}
+                      onChange={(e) => setEditingPartner({ ...editingPartner, description: e.target.value })}
+                      placeholder="Co-production agreements, OTT syndication, or audio rights..."
                       className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500"
                     />
                   </div>
@@ -367,7 +357,7 @@ export const NewsAdminPage: React.FC = () => {
                   <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
                     <button
                       type="button"
-                      onClick={() => setEditingArticle(null)}
+                      onClick={() => setEditingPartner(null)}
                       className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-mono text-xs rounded-xl"
                     >
                       Cancel
@@ -378,7 +368,7 @@ export const NewsAdminPage: React.FC = () => {
                       className="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-bold font-mono text-xs uppercase rounded-xl flex items-center gap-2 shadow-lg"
                     >
                       {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                      <span>Save Article</span>
+                      <span>Save Partner</span>
                     </button>
                   </div>
                 </form>
@@ -391,13 +381,12 @@ export const NewsAdminPage: React.FC = () => {
             <MediaPickerModal
               isOpen={true}
               onClose={() => setShowMediaPicker(false)}
-              categoryFilterDefault="news"
-              onSelect={({ mediaId, url, focalPoint }) => {
-                setEditingArticle((prev) => ({
+              categoryFilterDefault="partners"
+              onSelect={({ mediaId, url }) => {
+                setEditingPartner((prev) => ({
                   ...prev,
-                  imageMediaId: mediaId,
-                  imageUrl: url,
-                  focalPoint,
+                  logoMediaId: mediaId,
+                  logoUrl: url,
                 }));
                 setShowMediaPicker(false);
               }}
@@ -410,9 +399,9 @@ export const NewsAdminPage: React.FC = () => {
               <div className="bg-zinc-950 border border-rose-500/40 rounded-3xl max-w-md w-full p-6 space-y-6 text-white text-center shadow-2xl">
                 <AlertCircle className="w-12 h-12 text-rose-500 mx-auto" />
                 <div className="space-y-1">
-                  <h3 className="text-xl font-bold">Delete Article?</h3>
+                  <h3 className="text-xl font-bold">Remove Partner?</h3>
                   <p className="text-xs text-zinc-400">
-                    This will delete &quot;{deleteConfirm.title}&quot; from the newsroom.
+                    This will remove &quot;{deleteConfirm.name}&quot; from the studio alliance roster.
                   </p>
                 </div>
                 <div className="flex gap-3 justify-center pt-2">

@@ -1,12 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { INITIAL_PROJECTS } from '../../data/mockData';
+import { ProjectItem } from '../../types';
+import { resolveProjectMedia } from '../../lib/mediaResolver';
+import { getProjects } from '../../lib/cmsService';
 import { Film } from 'lucide-react';
 import { StargazeImage } from '../../components/common/StargazeImage';
 
 export const ProjectsPage: React.FC = () => {
-  const publishedProjects = INITIAL_PROJECTS.filter((p) => p.status === 'PUBLISHED');
+  const [projects, setProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const cmsData = await getProjects();
+        const base = cmsData && cmsData.length > 0 ? cmsData : INITIAL_PROJECTS;
+        const resolved = await Promise.all(base.map(resolveProjectMedia));
+        if (isMounted) setProjects(resolved);
+      } catch (err) {
+        console.warn('Error loading projects, using defaults:', err);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const publishedProjects = projects.filter((p) => p.status === 'PUBLISHED');
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans">
@@ -33,6 +56,7 @@ export const ProjectsPage: React.FC = () => {
                   <StargazeImage
                     src={project.posterUrl}
                     alt={project.title}
+                    focalPoint={project.focalPoint}
                     fallbackTitle={project.title}
                     category={project.genre}
                     className="w-full h-full object-cover"

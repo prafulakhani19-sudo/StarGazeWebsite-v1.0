@@ -152,6 +152,17 @@ export const INITIAL_DISTRIBUTION: DistributionTitle[] = [
     status: 'PUBLISHED',
     updatedAt: '2026-01-20T00:00:00.000Z',
   },
+  {
+    id: 'dist-3',
+    title: 'SAHEB VIKAS KARI',
+    type: 'Film',
+    territories: ['India', 'Global Digital Streaming'],
+    rightsAvailable: ['Theatrical Rights', 'Digital OTT', 'Satellite'],
+    synopsis: 'Compelling political-social drama feature presented by Satish Mohod (Orange City Production).',
+    posterUrl: CLIENT_MEDIA['saheb-vikaskari'].desktop,
+    status: 'PUBLISHED',
+    updatedAt: '2026-02-28T00:00:00.000Z',
+  },
 ];
 
 export const INITIAL_NEWS: NewsArticle[] = [

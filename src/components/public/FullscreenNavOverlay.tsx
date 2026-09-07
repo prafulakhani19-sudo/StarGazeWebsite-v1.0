@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
-import { X, ArrowRight, Sparkles, Film, Camera, Globe, Tv, Calendar, Newspaper, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
+import { getMediaForSlot } from '../../lib/mediaResolver';
+import { StargazeImage } from '../common/StargazeImage';
 
 interface FullscreenNavOverlayProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const NAV_PREVIEWS: Record<string, { image: string; tag: string; title: string; desc: string }> = {
+interface NavPreviewItem {
+  image: string;
+  focalPoint?: { x: number; y: number };
+  tag: string;
+  title: string;
+  desc: string;
+}
+
+const DEFAULT_NAV_PREVIEWS: Record<string, NavPreviewItem> = {
   WORK: {
-    image: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1200&q=80',
+    image: '/uploads/Saheb_Vikaskari_-_1920x1080_1788768188845_6yh5ad.png',
     tag: 'CINEMA SLATE',
-    title: 'ASTRA: BEYOND THE HORIZON',
-    desc: 'IMAX 70mm Feature Co-Production & Visual Effects Suite',
+    title: 'SAHEB VIKAS KARI',
+    desc: 'Political-social narrative feature presented by Satish Mohod, Orange City Production.',
   },
   CAPABILITIES: {
     image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80',
@@ -26,31 +36,78 @@ const NAV_PREVIEWS: Record<string, { image: string; tag: string; title: string; 
     desc: 'State-of-the-art camera systems & optical rental infrastructure',
   },
   DISTRIBUTION: {
-    image: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1200&q=80',
+    image: '/uploads/physco_1920x1080_1788768698932_os0fl1.png',
     tag: 'GLOBAL CATALOGUE',
-    title: 'INTERNATIONAL LICENSING',
-    desc: 'Representing theatrical & streaming rights across 120+ territories',
+    title: 'PSYCHO (SAMJO TO)',
+    desc: 'Critically acclaimed short film distributed across global film festivals & OTT platforms.',
   },
   EXPERIENCES: {
-    image: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=80',
+    image: '/uploads/Father___Son_Duo_1600x500_1788768266576_25bj4l.png',
     tag: 'ENTERTAINMENT & EVENTS',
-    title: 'CANNES PREMIERE GALA',
-    desc: 'Immersive festival showcases and live entertainment activations',
+    title: 'FATHER & SON DUO LIVE',
+    desc: 'Immersive live music concert & theatrical tour featuring Narayan Mohod & Satish Mohod.',
   },
   NEWSROOM: {
     image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1200&q=80',
     tag: 'PRESS & INSIGHTS',
-    title: '$150M PRODUCTION ANNOUNCEMENT',
+    title: 'STUDIO ANNOUNCEMENT',
     desc: 'Latest company press releases and cinema technology reports',
   },
 };
 
 export const FullscreenNavOverlay: React.FC<FullscreenNavOverlayProps> = ({ isOpen, onClose }) => {
   const [activeNav, setActiveNav] = useState<string>('WORK');
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [navPreviews, setNavPreviews] = useState<Record<string, NavPreviewItem>>(DEFAULT_NAV_PREVIEWS);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDynamicMedia() {
+      const [logoRes, workRes, distRes, expRes] = await Promise.all([
+        getMediaForSlot('brand.logo'),
+        getMediaForSlot('hero.sahebVikaskari.desktop'),
+        getMediaForSlot('hero.psycho.desktop'),
+        getMediaForSlot('events.fatherSon'),
+      ]);
+
+      if (!isMounted) return;
+
+      if (logoRes.url) {
+        setLogoUrl(logoRes.url);
+      }
+
+      setNavPreviews((prev) => ({
+        ...prev,
+        WORK: {
+          ...prev.WORK,
+          image: workRes.url || prev.WORK.image,
+          focalPoint: workRes.focalPoint,
+        },
+        DISTRIBUTION: {
+          ...prev.DISTRIBUTION,
+          image: distRes.url || prev.DISTRIBUTION.image,
+          focalPoint: distRes.focalPoint,
+        },
+        EXPERIENCES: {
+          ...prev.EXPERIENCES,
+          image: expRes.url || prev.EXPERIENCES.image,
+          focalPoint: expRes.focalPoint,
+        },
+      }));
+    }
+
+    if (isOpen) {
+      loadDynamicMedia();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const currentPreview = NAV_PREVIEWS[activeNav] || NAV_PREVIEWS.WORK;
+  const currentPreview = navPreviews[activeNav] || navPreviews.WORK;
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#0A0A0C]/95 backdrop-blur-2xl text-white flex flex-col justify-between overflow-hidden animate-fade-in">
@@ -63,9 +120,18 @@ export const FullscreenNavOverlay: React.FC<FullscreenNavOverlayProps> = ({ isOp
       {/* Header bar inside overlay */}
       <div className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#E5C158] flex items-center justify-center text-black font-black">
-            <Sparkles className="w-4 h-4 fill-black" />
-          </div>
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt="Stargaze Media"
+              className="h-10 w-auto max-w-[140px] object-contain"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-lg bg-[#E5C158] flex items-center justify-center text-black font-black">
+              <Sparkles className="w-4 h-4 fill-black" />
+            </div>
+          )}
           <span className="text-lg font-black tracking-widest font-serif-cinematic">STARGAZE UNIVERSE</span>
         </div>
 
@@ -120,9 +186,10 @@ export const FullscreenNavOverlay: React.FC<FullscreenNavOverlayProps> = ({ isOp
         {/* Dynamic Project Preview Frame (Right 5 Cols) */}
         <div className="hidden lg:block lg:col-span-5 relative">
           <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-[#E5C158]/30 bg-zinc-900 shadow-2xl group">
-            <img
+            <StargazeImage
               src={currentPreview.image}
               alt={currentPreview.title}
+              focalPoint={currentPreview.focalPoint}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/40 to-transparent" />

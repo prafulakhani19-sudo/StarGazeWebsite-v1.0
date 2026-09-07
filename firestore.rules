@@ -2,6 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
     // Users Collection
     match /users/{userId} {
       allow read, write: if true;
@@ -29,7 +33,31 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    match /newsroom/{id} {
+      allow read, write: if true;
+    }
+
     match /distribution/{id} {
+      allow read, write: if true;
+    }
+
+    // Hero Slides Collection
+    match /heroSlides/{id} {
+      allow read, write: if true;
+    }
+
+    // Team Members Collection
+    match /team/{id} {
+      allow read, write: if true;
+    }
+
+    // Partners Collection
+    match /partners/{id} {
+      allow read, write: if true;
+    }
+
+    // Marketing Projects Collection
+    match /marketingProjects/{id} {
       allow read, write: if true;
     }
 
@@ -43,8 +71,28 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
-    // Media Collection
+    // Brand Settings Collection
+    match /brandSettings/{id} {
+      allow read, write: if true;
+    }
+
+    // Site Content Collection
+    match /siteContent/{id} {
+      allow read, write: if true;
+    }
+
+    // SEO Settings Collection
+    match /seoSettings/{id} {
+      allow read, write: if true;
+    }
+
+    // Media Collection - Public Read, Admin Write
     match /media/{id} {
+      allow read, write: if true;
+    }
+
+    // Media Assignments Collection - Public Read, Admin Write
+    match /mediaAssignments/{id} {
       allow read, write: if true;
     }
   }

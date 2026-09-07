@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PublicHeader } from '../../components/public/PublicHeader';
 import { PublicFooter } from '../../components/public/PublicFooter';
 import { HeroSlider } from '../../components/public/HeroSlider';
@@ -10,19 +10,107 @@ import { ProjectDetailModal } from '../../components/public/ProjectDetailModal';
 import { EquipmentDetailModal } from '../../components/public/EquipmentDetailModal';
 import { StargazeImage } from '../../components/common/StargazeImage';
 import { INITIAL_PROJECTS, INITIAL_EQUIPMENT, INITIAL_EVENTS, INITIAL_NEWS, INITIAL_DISTRIBUTION } from '../../data/mockData';
-import { ProjectItem, EquipmentItem } from '../../types';
-import { Film, Camera, Sparkles, ArrowRight, Calendar, Play, ChevronRight, CheckCircle2, Globe, Award, Newspaper, ArrowUpRight } from 'lucide-react';
+import { ProjectItem, EquipmentItem, EventItem, DistributionTitle, NewsArticle, PartnerItem, SiteContentConfig } from '../../types';
+import { resolveProjectMedia, resolveEquipmentMedia, resolveEventMedia, resolveDistributionMedia, resolveNewsMedia } from '../../lib/mediaResolver';
+import { getProjects, getEquipment, getEvents, getDistribution, getNewsArticles, getPartners, getSiteContent } from '../../lib/cmsService';
+import { Film, Camera, Sparkles, ArrowRight, Calendar, Play, ChevronRight, CheckCircle2, Globe, Award, Newspaper, ArrowUpRight, UserCheck } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentItem | null>(null);
   const [projectCategory, setProjectCategory] = useState<string>('ALL');
 
-  const publishedProjects = INITIAL_PROJECTS.filter((p) => p.status === 'PUBLISHED');
-  const publishedEquipment = INITIAL_EQUIPMENT.filter((e) => e.status === 'PUBLISHED');
-  const publishedEvents = INITIAL_EVENTS.filter((e) => e.status === 'PUBLISHED');
-  const publishedNews = INITIAL_NEWS.filter((n) => n.status === 'PUBLISHED');
-  const publishedDistribution = INITIAL_DISTRIBUTION.filter((d) => d.status === 'PUBLISHED');
+  const [projects, setProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
+  const [equipment, setEquipment] = useState<EquipmentItem[]>(INITIAL_EQUIPMENT);
+  const [events, setEvents] = useState<EventItem[]>(INITIAL_EVENTS);
+  const [distribution, setDistribution] = useState<DistributionTitle[]>(INITIAL_DISTRIBUTION);
+  const [news, setNews] = useState<NewsArticle[]>(INITIAL_NEWS);
+  const [partners, setPartners] = useState<PartnerItem[]>([]);
+  const [siteContent, setSiteContent] = useState<SiteContentConfig | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadAllContent() {
+      // 1. Projects
+      try {
+        const cmsProjects = await getProjects();
+        const baseProjects = cmsProjects && cmsProjects.length > 0 ? cmsProjects : INITIAL_PROJECTS;
+        const resolved = await Promise.all(baseProjects.map(resolveProjectMedia));
+        if (isMounted) setProjects(resolved);
+      } catch (err) {
+        console.warn('Error loading projects, using defaults:', err);
+      }
+
+      // 2. Equipment
+      try {
+        const cmsEq = await getEquipment();
+        const baseEq = cmsEq && cmsEq.length > 0 ? cmsEq : INITIAL_EQUIPMENT;
+        const resolved = await Promise.all(baseEq.map(resolveEquipmentMedia));
+        if (isMounted) setEquipment(resolved);
+      } catch (err) {
+        console.warn('Error loading equipment:', err);
+      }
+
+      // 3. Events
+      try {
+        const cmsEvents = await getEvents();
+        const baseEvents = cmsEvents && cmsEvents.length > 0 ? cmsEvents : INITIAL_EVENTS;
+        const resolved = await Promise.all(baseEvents.map(resolveEventMedia));
+        if (isMounted) setEvents(resolved);
+      } catch (err) {
+        console.warn('Error loading events:', err);
+      }
+
+      // 4. Distribution
+      try {
+        const cmsDist = await getDistribution();
+        const baseDist = cmsDist && cmsDist.length > 0 ? cmsDist : INITIAL_DISTRIBUTION;
+        const resolved = await Promise.all(baseDist.map(resolveDistributionMedia));
+        if (isMounted) setDistribution(resolved);
+      } catch (err) {
+        console.warn('Error loading distribution:', err);
+      }
+
+      // 5. News
+      try {
+        const cmsNews = await getNewsArticles();
+        const baseNews = cmsNews && cmsNews.length > 0 ? cmsNews : INITIAL_NEWS;
+        const resolved = await Promise.all(baseNews.map(resolveNewsMedia));
+        if (isMounted) setNews(resolved);
+      } catch (err) {
+        console.warn('Error loading news:', err);
+      }
+
+      // 6. Partners
+      try {
+        const cmsPartners = await getPartners();
+        if (isMounted && cmsPartners) setPartners(cmsPartners.filter(p => p.status === 'PUBLISHED'));
+      } catch (err) {
+        console.warn('Error loading partners:', err);
+      }
+
+      // 7. Site Content / Narrative
+      try {
+        const content = await getSiteContent();
+        if (isMounted && content) setSiteContent(content);
+      } catch (err) {
+        console.warn('Error loading site content:', err);
+      }
+    }
+
+    loadAllContent();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const publishedProjects = projects.filter((p) => p.status === 'PUBLISHED');
+  const publishedEquipment = equipment.filter((e) => e.status === 'PUBLISHED');
+  const publishedEvents = events.filter((e) => e.status === 'PUBLISHED');
+  const publishedNews = news.filter((n) => n.status === 'PUBLISHED');
+  const publishedDistribution = distribution.filter((d) => d.status === 'PUBLISHED');
 
   const filteredProjects = projectCategory === 'ALL'
     ? publishedProjects
@@ -99,6 +187,7 @@ export const HomePage: React.FC = () => {
                   <StargazeImage
                     src={project.posterUrl}
                     alt={project.title}
+                    focalPoint={project.focalPoint}
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-transparent to-transparent" />
@@ -169,7 +258,7 @@ export const HomePage: React.FC = () => {
               >
                 <div>
                   <div className="aspect-[4/3] rounded-xl overflow-hidden mb-4 bg-zinc-900 border border-white/5">
-                    <StargazeImage src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                    <StargazeImage src={item.imageUrl} alt={item.name} focalPoint={item.focalPoint} className="w-full h-full object-cover" />
                   </div>
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[#E5C158] block mb-1">
                     {item.category}
@@ -223,7 +312,7 @@ export const HomePage: React.FC = () => {
                 className="bg-zinc-950 border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 hover:border-[#E5C158]/40 transition"
               >
                 <div className="w-full sm:w-44 aspect-[3/4] rounded-xl overflow-hidden shrink-0 bg-zinc-900">
-                  <StargazeImage src={dist.posterUrl} alt={dist.title} className="w-full h-full object-cover" />
+                  <StargazeImage src={dist.posterUrl} alt={dist.title} focalPoint={dist.focalPoint} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 flex flex-col justify-between space-y-3">
                   <div>
@@ -251,6 +340,58 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* INDUSTRY ALLIANCES & PARTNERS (Dynamic CMS) */}
+      {partners.length > 0 && (
+        <section className="py-20 bg-zinc-950 border-t border-white/5 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto space-y-10">
+            <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 gap-4">
+              <div>
+                <span className="text-[#E5C158] text-xs font-mono tracking-widest uppercase block mb-2">
+                  INDUSTRY COLLABORATORS & ALLIANCES
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-black font-serif-cinematic text-white uppercase">
+                  CO-PRODUCERS & PARTNERS
+                </h2>
+              </div>
+              <p className="text-xs font-mono text-zinc-400 max-w-md">
+                Institutional, governmental, and production alliances powering Stargaze cinema.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+              {partners.map((partner) => (
+                <div
+                  key={partner.id}
+                  className="bg-black/60 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-3 hover:border-[#E5C158]/50 transition group"
+                >
+                  <div className="h-16 w-full flex items-center justify-center">
+                    {partner.logoUrl ? (
+                      <StargazeImage
+                        src={partner.logoUrl}
+                        alt={partner.name}
+                        className="max-h-12 max-w-[85%] object-contain filter grayscale group-hover:grayscale-0 transition duration-300"
+                      />
+                    ) : (
+                      <span className="text-xs font-mono font-bold text-[#E5C158] uppercase tracking-wider">
+                        {partner.name}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white uppercase group-hover:text-[#E5C158] transition">
+                      {partner.name}
+                    </h4>
+                    <span className="text-[10px] font-mono text-zinc-500 uppercase block mt-0.5">
+                      {partner.category}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 09 EXPERIENCES */}
       <section className="py-24 bg-[#0A0A0C] border-t border-white/5 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-12">
@@ -274,7 +415,7 @@ export const HomePage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {publishedEvents.map((evt) => (
               <div key={evt.id} className="group relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-950 aspect-[16/9]">
-                <StargazeImage src={evt.imageUrl} alt={evt.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60" />
+                <StargazeImage src={evt.imageUrl} alt={evt.title} focalPoint={evt.focalPoint} className="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/40 to-transparent" />
                 <div className="absolute bottom-0 inset-x-0 p-6 space-y-2">
                   <div className="flex items-center gap-3 text-xs font-mono text-[#E5C158]">
