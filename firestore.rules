@@ -6,94 +6,137 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isCmsAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'praful.akhani19@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'SUPER_ADMIN' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'CONTENT_ADMIN' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'EDITOR' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'EQUIPMENT_MANAGER' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'EVENT_MANAGER' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'MARKETING_MANAGER'
+        ))
+      );
+    }
+
+    // Default deny rule
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
     // Users Collection
     match /users/{userId} {
-      allow read, write: if true;
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isCmsAdmin());
     }
 
     // Activity Logs Collection
     match /activity_logs/{logId} {
-      allow read, write: if true;
+      allow read: if isCmsAdmin();
+      allow create: if isAuthenticated();
     }
 
-    // Content Collections: Projects, Equipment, Events, News, Distribution
+    // Projects Collection
     match /projects/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
+    // Equipment Collection
     match /equipment/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
+    // Events Collection
     match /events/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
+    // News Collection
     match /news/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
+    // Newsroom Collection
     match /newsroom/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
+    // Distribution Collection
     match /distribution/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
     // Hero Slides Collection
     match /heroSlides/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
     // Team Members Collection
     match /team/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
     // Partners Collection
     match /partners/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
     // Marketing Projects Collection
     match /marketingProjects/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
     // Enquiries Collection
     match /enquiries/{id} {
-      allow read, write: if true;
+      allow create: if true;
+      allow read, write: if isCmsAdmin();
     }
 
-    // Site Settings & Appearance
+    // Site Settings (site_settings)
     match /site_settings/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
-    // Brand Settings Collection
+    // Brand Settings Collection (brandSettings)
     match /brandSettings/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
-    // Site Content Collection
+    // Site Content Collection (siteContent)
     match /siteContent/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
-    // SEO Settings Collection
+    // SEO Settings Collection (seoSettings)
     match /seoSettings/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
-    // Media Collection - Public Read, Admin Write
+    // Media Collection
     match /media/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
 
-    // Media Assignments Collection - Public Read, Admin Write
+    // Media Assignments Collection
     match /mediaAssignments/{id} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isCmsAdmin();
     }
   }
 }

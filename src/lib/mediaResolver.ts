@@ -129,6 +129,32 @@ export async function getMediaForSlot(
   };
 }
 
+export async function resolveMediaById(mediaId: string): Promise<ResolvedMedia | null> {
+  if (!mediaId) return null;
+  try {
+    let mediaDoc = mediaCache[mediaId];
+    if (!mediaDoc) {
+      const mediaRef = doc(db, 'media', mediaId);
+      const mediaSnap = await getDoc(mediaRef);
+      if (mediaSnap.exists()) {
+        mediaDoc = { ...mediaSnap.data(), id: mediaSnap.id } as MediaDocument;
+        mediaCache[mediaId] = mediaDoc;
+      }
+    }
+    if (mediaDoc && mediaDoc.downloadUrl) {
+      return {
+        url: mediaDoc.downloadUrl,
+        alt: mediaDoc.altText || mediaDoc.name || 'Stargaze Media',
+        focalPoint: mediaDoc.focalPoint,
+        mediaId: mediaDoc.id,
+      };
+    }
+  } catch (err) {
+    console.error(`Error resolving media by ID ${mediaId}:`, err);
+  }
+  return null;
+}
+
 export async function assignMediaToSlot(slot: string, mediaId: string, userEmail: string = 'admin'): Promise<void> {
   const assignmentRef = doc(db, 'mediaAssignments', slot);
   const data: MediaAssignment = {
@@ -149,6 +175,21 @@ export async function removeSlotAssignment(slot: string): Promise<void> {
 }
 
 export async function resolveProjectMedia(project: ProjectItem): Promise<ProjectItem> {
+  // 1. Prioritize explicit media IDs if populated in DB document
+  if (project.coverMediaId) {
+    const res = await resolveMediaById(project.coverMediaId);
+    if (res && res.url) {
+      project = { ...project, posterUrl: res.url, focalPoint: res.focalPoint || project.focalPoint };
+    }
+  }
+  if (project.heroMediaId) {
+    const res = await resolveMediaById(project.heroMediaId);
+    if (res && res.url) {
+      project = { ...project, heroUrl: res.url };
+    }
+  }
+
+  // 2. Fall back to slot-based resolution
   const key = (project.id + ' ' + project.title).toLowerCase();
   let slot = '';
   let fallbackSlot = '';
@@ -167,15 +208,15 @@ export async function resolveProjectMedia(project: ProjectItem): Promise<Project
     fallbackSlot = 'hero.fatherSon.desktop';
   }
 
-  if (slot) {
+  if (slot && !project.coverMediaId) {
     const res = await getMediaForSlot(slot);
     if (res.url) {
-      return { ...project, posterUrl: res.url, focalPoint: res.focalPoint };
+      return { ...project, posterUrl: res.url, focalPoint: res.focalPoint || project.focalPoint };
     }
     if (fallbackSlot) {
       const fbRes = await getMediaForSlot(fallbackSlot);
       if (fbRes.url) {
-        return { ...project, posterUrl: fbRes.url, focalPoint: fbRes.focalPoint };
+        return { ...project, posterUrl: fbRes.url, focalPoint: fbRes.focalPoint || project.focalPoint };
       }
     }
   }
@@ -183,6 +224,16 @@ export async function resolveProjectMedia(project: ProjectItem): Promise<Project
 }
 
 export async function resolveEquipmentMedia(equipment: EquipmentItem): Promise<EquipmentItem> {
+  // 1. Prioritize explicit media IDs
+  const imageId = equipment.imageMediaId || equipment.primaryMediaId;
+  if (imageId) {
+    const res = await resolveMediaById(imageId);
+    if (res && res.url) {
+      return { ...equipment, imageUrl: res.url, focalPoint: res.focalPoint || equipment.focalPoint };
+    }
+  }
+
+  // 2. Fall back to slot-based resolution
   const key = (equipment.id + ' ' + equipment.name).toLowerCase();
   let slot = '';
   if (key.includes('alexa')) slot = 'equipment.arriAlexa';
@@ -190,16 +241,26 @@ export async function resolveEquipmentMedia(equipment: EquipmentItem): Promise<E
   else if (key.includes('cooke') || key.includes('anamorphic')) slot = 'equipment.cookeAnamorphic';
   else if (key.includes('ronin') || key.includes('dji')) slot = 'equipment.ronin2';
 
-  if (slot) {
+  if (slot && !imageId) {
     const res = await getMediaForSlot(slot);
     if (res.url) {
-      return { ...equipment, imageUrl: res.url, focalPoint: res.focalPoint };
+      return { ...equipment, imageUrl: res.url, focalPoint: res.focalPoint || equipment.focalPoint };
     }
   }
   return equipment;
 }
 
 export async function resolveEventMedia(event: EventItem): Promise<EventItem> {
+  // 1. Prioritize explicit media IDs
+  const imageId = event.imageMediaId || event.coverMediaId;
+  if (imageId) {
+    const res = await resolveMediaById(imageId);
+    if (res && res.url) {
+      return { ...event, imageUrl: res.url, focalPoint: res.focalPoint || event.focalPoint };
+    }
+  }
+
+  // 2. Fall back to slot-based resolution
   const key = (event.id + ' ' + event.title).toLowerCase();
   let slot = '';
   if (key.includes('father') || key.includes('duo') || key.includes('concert') || key.includes('narayan')) {
@@ -210,16 +271,25 @@ export async function resolveEventMedia(event: EventItem): Promise<EventItem> {
     slot = 'events.imaxPremiere';
   }
 
-  if (slot) {
+  if (slot && !imageId) {
     const res = await getMediaForSlot(slot);
     if (res.url) {
-      return { ...event, imageUrl: res.url, focalPoint: res.focalPoint };
+      return { ...event, imageUrl: res.url, focalPoint: res.focalPoint || event.focalPoint };
     }
   }
   return event;
 }
 
 export async function resolveDistributionMedia(title: DistributionTitle): Promise<DistributionTitle> {
+  // 1. Prioritize explicit media IDs
+  if (title.coverMediaId) {
+    const res = await resolveMediaById(title.coverMediaId);
+    if (res && res.url) {
+      return { ...title, posterUrl: res.url, focalPoint: res.focalPoint || title.focalPoint };
+    }
+  }
+
+  // 2. Fall back to slot-based resolution
   const key = (title.id + ' ' + title.title).toLowerCase();
   let slot = '';
   let fallbackSlot = '';
@@ -238,15 +308,15 @@ export async function resolveDistributionMedia(title: DistributionTitle): Promis
     fallbackSlot = 'hero.fatherSon.desktop';
   }
 
-  if (slot) {
+  if (slot && !title.coverMediaId) {
     const res = await getMediaForSlot(slot);
     if (res.url) {
-      return { ...title, posterUrl: res.url, focalPoint: res.focalPoint };
+      return { ...title, posterUrl: res.url, focalPoint: res.focalPoint || title.focalPoint };
     }
     if (fallbackSlot) {
       const fbRes = await getMediaForSlot(fallbackSlot);
       if (fbRes.url) {
-        return { ...title, posterUrl: fbRes.url, focalPoint: fbRes.focalPoint };
+        return { ...title, posterUrl: fbRes.url, focalPoint: fbRes.focalPoint || title.focalPoint };
       }
     }
   }
@@ -254,6 +324,16 @@ export async function resolveDistributionMedia(title: DistributionTitle): Promis
 }
 
 export async function resolveNewsMedia(news: NewsArticle): Promise<NewsArticle> {
+  // 1. Prioritize explicit media IDs
+  const imageId = news.imageMediaId || news.featuredMediaId;
+  if (imageId) {
+    const res = await resolveMediaById(imageId);
+    if (res && res.url) {
+      return { ...news, imageUrl: res.url, focalPoint: res.focalPoint || news.focalPoint };
+    }
+  }
+
+  // 2. Fall back to slot-based resolution
   const key = (news.id + ' ' + news.title + ' ' + news.summary).toLowerCase();
   let slot = '';
   let fallbackSlot = '';
@@ -266,15 +346,15 @@ export async function resolveNewsMedia(news: NewsArticle): Promise<NewsArticle> 
     fallbackSlot = 'hero.nayiSoch.desktop';
   }
 
-  if (slot) {
+  if (slot && !imageId) {
     const res = await getMediaForSlot(slot);
     if (res.url) {
-      return { ...news, imageUrl: res.url, focalPoint: res.focalPoint };
+      return { ...news, imageUrl: res.url, focalPoint: res.focalPoint || news.focalPoint };
     }
     if (fallbackSlot) {
       const fbRes = await getMediaForSlot(fallbackSlot);
       if (fbRes.url) {
-        return { ...news, imageUrl: fbRes.url, focalPoint: fbRes.focalPoint };
+        return { ...news, imageUrl: fbRes.url, focalPoint: fbRes.focalPoint || news.focalPoint };
       }
     }
   }

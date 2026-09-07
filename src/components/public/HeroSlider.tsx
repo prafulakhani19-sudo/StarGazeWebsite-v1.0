@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ChevronLeft, ChevronRight, Play, Film, Sparkles } from 'lucide-react';
 import { STARGAZE_MEDIA_REGISTRY } from '../../data/media';
 import { StargazeImage } from '../common/StargazeImage';
-import { getMediaForSlot } from '../../lib/mediaResolver';
+import { getMediaForSlot, resolveMediaById } from '../../lib/mediaResolver';
 import { getHeroSlides } from '../../lib/cmsService';
 
 export interface HeroSlideData {
@@ -21,6 +21,8 @@ export interface HeroSlideData {
   primaryCtaExternal?: boolean;
   secondaryCtaText: string;
   secondaryCtaLink: string;
+  desktopMediaId?: string;
+  mobileMediaId?: string;
 }
 
 const INITIAL_HERO_SLIDES: HeroSlideData[] = [
@@ -124,6 +126,8 @@ export const HeroSlider: React.FC = () => {
             primaryCtaExternal: s.primaryCtaExternal,
             secondaryCtaText: s.secondaryCtaText,
             secondaryCtaLink: s.secondaryCtaLink,
+            desktopMediaId: s.desktopMediaId,
+            mobileMediaId: s.mobileMediaId,
           }));
         }
       } catch (err) {
@@ -133,25 +137,63 @@ export const HeroSlider: React.FC = () => {
       const resolvedSlides = await Promise.all(
         baseSlides.map(async (slide) => {
           if (slide.id === 'stargaze') return slide;
-          const slotName = slide.id === 'nayi-soch'
-            ? 'nayiSoch'
-            : slide.id === 'psycho'
-            ? 'psycho'
-            : slide.id === 'saheb-vikaskari'
-            ? 'sahebVikaskari'
-            : 'fatherSon';
-          const desktopSlot = `hero.${slotName}.desktop`;
-          const mobileSlot = `hero.${slotName}.mobile`;
 
-          const resDesktop = await getMediaForSlot(desktopSlot, slide.desktopSrc);
-          const resMobile = await getMediaForSlot(mobileSlot, slide.mobileSrc);
+          let finalDesktopSrc = slide.desktopSrc;
+          let finalMobileSrc = slide.mobileSrc;
+          let finalDesktopFocalPoint = slide.desktopFocalPoint;
+          let finalMobileFocalPoint = slide.mobileFocalPoint;
+
+          // 1. Resolve explicit media IDs if defined on the slide
+          if (slide.desktopMediaId) {
+            const res = await resolveMediaById(slide.desktopMediaId);
+            if (res && res.url) {
+              finalDesktopSrc = res.url;
+              finalDesktopFocalPoint = res.focalPoint || slide.desktopFocalPoint;
+            }
+          }
+          if (slide.mobileMediaId) {
+            const res = await resolveMediaById(slide.mobileMediaId);
+            if (res && res.url) {
+              finalMobileSrc = res.url;
+              finalMobileFocalPoint = res.focalPoint || slide.mobileFocalPoint;
+            }
+          }
+
+          // 2. If no explicit media ID, resolve slot fallbacks
+          if (!slide.desktopMediaId) {
+            const slotName = slide.id === 'nayi-soch'
+              ? 'nayiSoch'
+              : slide.id === 'psycho'
+              ? 'psycho'
+              : slide.id === 'saheb-vikaskari'
+              ? 'sahebVikaskari'
+              : 'fatherSon';
+            const desktopSlot = `hero.${slotName}.desktop`;
+            const resDesktop = await getMediaForSlot(desktopSlot, slide.desktopSrc);
+            finalDesktopSrc = resDesktop.url || slide.desktopSrc;
+            finalDesktopFocalPoint = resDesktop.focalPoint || slide.desktopFocalPoint;
+          }
+
+          if (!slide.mobileMediaId) {
+            const slotName = slide.id === 'nayi-soch'
+              ? 'nayiSoch'
+              : slide.id === 'psycho'
+              ? 'psycho'
+              : slide.id === 'saheb-vikaskari'
+              ? 'sahebVikaskari'
+              : 'fatherSon';
+            const mobileSlot = `hero.${slotName}.mobile`;
+            const resMobile = await getMediaForSlot(mobileSlot, slide.mobileSrc);
+            finalMobileSrc = resMobile.url || slide.mobileSrc;
+            finalMobileFocalPoint = resMobile.focalPoint || slide.mobileFocalPoint;
+          }
 
           return {
             ...slide,
-            desktopSrc: resDesktop.url || slide.desktopSrc,
-            mobileSrc: resMobile.url || slide.mobileSrc,
-            desktopFocalPoint: resDesktop.focalPoint || slide.desktopFocalPoint,
-            mobileFocalPoint: resMobile.focalPoint || slide.mobileFocalPoint,
+            desktopSrc: finalDesktopSrc,
+            mobileSrc: finalMobileSrc,
+            desktopFocalPoint: finalDesktopFocalPoint,
+            mobileFocalPoint: finalMobileFocalPoint,
           };
         })
       );

@@ -138,21 +138,50 @@ export const AdminLoginPage: React.FC = () => {
         setSession(serverData.user, serverData.token);
       }
 
-      // 4. Verify Firestore profile for the authenticated UID
+      // 4. Verify or initialize Firestore profile for the authenticated UID
       const userDocRef = doc(db, 'users', verifiedUid);
-      let userDocSnap = await getDoc(userDocRef);
+      let userDocSnap: any = null;
+      try {
+        userDocSnap = await getDoc(userDocRef);
+      } catch (getErr) {
+        console.warn('Silent userDoc get warning:', getErr);
+      }
 
-      if (!userDocSnap.exists()) {
-        const q = query(collection(db, 'users'), where('email', '==', cleanEmail.toLowerCase()));
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const existingData = snap.docs[0].data();
-          await setDoc(userDocRef, { ...existingData, id: verifiedUid }, { merge: true });
+      const isSuper = cleanEmail.toLowerCase() === 'praful.akhani19@gmail.com';
+
+      if (!userDocSnap || !userDocSnap.exists()) {
+        let existingData: any = null;
+        try {
+          const q = query(collection(db, 'users'), where('email', '==', cleanEmail.toLowerCase()));
+          const snap = await getDocs(q);
+          if (!snap.empty) {
+            existingData = snap.docs[0].data();
+          }
+        } catch (e) {
+          console.warn('Silent email search warning:', e);
+        }
+
+        const initialProfile = {
+          id: verifiedUid,
+          email: cleanEmail.toLowerCase(),
+          displayName: existingData?.displayName || (isSuper ? 'Praful Akhani' : cleanEmail.split('@')[0]),
+          role: existingData?.role || (isSuper ? 'SUPER_ADMIN' : 'EDITOR'),
+          status: 'ACTIVE',
+          department: isSuper ? 'Executive Board' : (existingData?.department || 'Operations'),
+          requiresPasswordChange: false,
+          createdAt: existingData?.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        try {
+          await setDoc(userDocRef, initialProfile, { merge: true });
           userDocSnap = await getDoc(userDocRef);
+        } catch (e) {
+          console.warn('Client profile creation warning:', e);
         }
       }
 
-      if (userDocSnap.exists()) {
+      if (userDocSnap && userDocSnap.exists()) {
         const profile = userDocSnap.data();
         if (profile.status === 'INACTIVE') {
           await auth.signOut();

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ProtectedRoute } from '../../components/common/ProtectedRoute';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { getBrandSettings, saveBrandSettings, saveCmsDocument } from '../../lib/cmsService';
+import { assignMediaToSlot } from '../../lib/mediaResolver';
 import { BrandSettings } from '../../types';
 import { MediaPickerModal } from '../../components/admin/MediaPickerModal';
 import { StargazeImage } from '../../components/common/StargazeImage';
@@ -45,6 +46,11 @@ export const BrandSettingsAdminPage: React.FC = () => {
       };
       await saveBrandSettings(updatedPayload);
       await saveCmsDocument('brandSettings', 'global', updatedPayload, 'UPDATE_BRAND_SETTINGS');
+      
+      if (settings.primaryLogoMediaId) {
+        await assignMediaToSlot('brand.logo', settings.primaryLogoMediaId);
+      }
+      
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch (err) {
