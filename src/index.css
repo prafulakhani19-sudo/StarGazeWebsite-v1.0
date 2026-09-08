@@ -11,50 +11,91 @@
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
   .font-grotesk {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Syne', -apple-system, sans-serif;
+  }
+  .font-mono-studio {
+    font-family: 'Space Mono', monospace;
   }
 }
 
-/* Base theme defaults */
+/* Base Avant-Garde theme variables */
 :root {
-  --bg-obsidian: #0A0A0C;
-  --text-warm: #F4F4F0;
-  --muted-grey: #8E8E93;
-  --stargaze-gold: #E5C158;
-  --stargaze-gold-hover: #F0CE68;
+  --bg-obsidian: #08080A;
+  --bg-card: #101014;
+  --text-warm: #F5F5F2;
+  --muted-grey: #8E8E98;
+  --studio-gold: #FFB800;
+  --studio-amber: #FF5500;
+  --studio-gold-hover: #FFC72C;
 }
 
 body {
-  background-color: #0A0A0C;
-  color: #F4F4F0;
+  background-color: #08080A;
+  color: #F5F5F2;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   overflow-x: hidden;
 }
 
-/* Custom Cinematic Scrollbar */
+/* Custom Avant-Garde Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A0A0C;
+  background: #08080A;
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272A;
-  border-radius: 3px;
+  background: #23232A;
+  border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #E5C158;
+  background: #FFB800;
 }
 
-/* Noise & Frame Depth Helpers */
+/* High-Energy Studio Marquee */
+@keyframes studioMarquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-studio-marquee {
+  display: flex;
+  width: max-content;
+  animation: studioMarquee 28s linear infinite;
+}
+
+.animate-studio-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Avant-Garde Card & Frame Highlights */
+.avant-border {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.avant-border:hover {
+  border-color: rgba(255, 184, 0, 0.45);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 184, 0, 0.08);
+}
+
 .stargaze-frame-border {
-  border: 1px solid rgba(229, 193, 88, 0.2);
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(229, 193, 88, 0.05);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 184, 0, 0.05);
 }
 
 .stargaze-frame-glow {
-  box-shadow: 0 0 50px rgba(229, 193, 88, 0.15);
+  box-shadow: 0 0 50px rgba(255, 184, 0, 0.15);
+}
+
+/* Subtle Film Scanline & Grain Texture */
+.film-grain-overlay {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 
 /* Hide default cursor on desktop when custom cursor is active */
@@ -64,3 +105,4 @@ body {
     cursor: none !important;
   }
 }
+
