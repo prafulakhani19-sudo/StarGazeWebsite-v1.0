@@ -1,12 +1,93 @@
 import { 
   HeroSlideItem, ProjectItem, EquipmentItem, EventItem, 
   DistributionTitle, TeamMember, PartnerItem, MarketingProjectItem, 
-  NewsArticle, SiteContentConfig, BrandSettings, SEOSettings 
+  NewsArticle, SiteContentConfig, BrandSettings, SEOSettings, StargazeWorldItem 
 } from '../types';
 import { 
   INITIAL_PROJECTS, INITIAL_EQUIPMENT, INITIAL_EVENTS, 
   INITIAL_DISTRIBUTION, INITIAL_NEWS 
 } from './mockData';
+
+export const INITIAL_STARGAZE_WORLDS: StargazeWorldItem[] = [
+  {
+    id: 'film',
+    code: '01',
+    name: 'FILM & SERIES',
+    tagline: 'IMAX & THEATRICAL PRODUCTION',
+    desc: 'Development, co-production, and full principal photography for feature films and original streaming series.',
+    imageUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=800&q=80',
+    iconName: 'Film',
+    link: '/projects',
+    stats: '14 Features In Slate',
+    displayOrder: 1,
+    status: 'PUBLISHED',
+  },
+  {
+    id: 'post',
+    code: '02',
+    name: 'POST-PRODUCTION',
+    tagline: 'VFX, COLOUR & DOLBY ATMOS',
+    desc: 'State-of-the-art post suite for 8K grading, photorealistic visual effects, Foley, dubbing, and DCP mastering.',
+    imageUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=800&q=80',
+    iconName: 'Sliders',
+    link: '/capabilities',
+    stats: '8K Dolby Vision Certified',
+    displayOrder: 2,
+    status: 'PUBLISHED',
+  },
+  {
+    id: 'gear',
+    code: '03',
+    name: 'CAMERA & GEAR',
+    tagline: 'TECHNICAL DOP RENTAL DIVISION',
+    desc: 'ARRI ALEXA 35, Sony Venice 2, Cooke Anamorphic glass, C-motion wireless focus, and LED Volume stages.',
+    imageUrl: 'https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=800&q=80',
+    iconName: 'Camera',
+    link: '/equipment',
+    stats: '250+ Cine Packages',
+    displayOrder: 3,
+    status: 'PUBLISHED',
+  },
+  {
+    id: 'distribution',
+    code: '04',
+    name: 'DISTRIBUTION',
+    tagline: 'GLOBAL CATALOGUE & LICENSING',
+    desc: 'Worldwide theatrical, SVOD, Pay TV, and international rights acquisition across 120+ territories.',
+    imageUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80',
+    iconName: 'Globe',
+    link: '/distribution',
+    stats: '120+ Global Territories',
+    displayOrder: 4,
+    status: 'PUBLISHED',
+  },
+  {
+    id: 'experiences',
+    code: '05',
+    name: 'EXPERIENCES',
+    tagline: 'PREMIERES & FESTIVALS',
+    desc: 'High-profile red carpet galas, film festival showcases, immersive fan experiences, and workshops.',
+    imageUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+    iconName: 'Sparkles',
+    link: '/events',
+    stats: '40+ Annual Galas',
+    displayOrder: 5,
+    status: 'PUBLISHED',
+  },
+  {
+    id: 'growth',
+    code: '06',
+    name: 'MARKETING & PR',
+    tagline: 'ENTERTAINMENT CAMPAIGNS',
+    desc: 'Strategic film promotion, digital campaign execution, celebrity talent PR, and global box office drive.',
+    imageUrl: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=800&q=80',
+    iconName: 'TrendingUp',
+    link: '/enquiry',
+    stats: '2.4B Global Reach',
+    displayOrder: 6,
+    status: 'PUBLISHED',
+  },
+];
 
 export const INITIAL_HERO_SLIDES: HeroSlideItem[] = [
   {
@@ -359,6 +440,12 @@ export const INITIAL_SITE_CONTENT: SiteContentConfig = {
       ctaDestination: '/enquiry',
       displayOrder: 11,
     },
+  },
+  universeSection: {
+    eyebrow: 'SPATIAL DIRECTORY',
+    heading: 'THE STARGAZE UNIVERSE',
+    description: 'Six interconnected cinema domains powering entertainment from script to global screens.',
+    worlds: INITIAL_STARGAZE_WORLDS,
   },
   brandStatement: {
     eyebrow: '01 // THE STARGAZE PARADIGM',

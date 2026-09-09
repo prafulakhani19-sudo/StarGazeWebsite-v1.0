@@ -297,6 +297,29 @@ export interface NewsArticle {
   updatedAt: string;
 }
 
+export interface StargazeWorldItem {
+  id: string;
+  code: string;
+  name: string;
+  tagline: string;
+  desc: string;
+  imageUrl: string;
+  imageMediaId?: string;
+  iconName?: string;
+  link: string;
+  stats: string;
+  displayOrder?: number;
+  status?: ContentStatus;
+  focalPoint?: { x: number; y: number };
+}
+
+export interface UniverseSectionConfig {
+  eyebrow: string;
+  heading: string;
+  description: string;
+  worlds: StargazeWorldItem[];
+}
+
 export interface HomepageSectionConfig {
   id: string;
   enabled: boolean;
@@ -311,6 +334,7 @@ export interface HomepageSectionConfig {
 export interface SiteContentConfig {
   id?: string;
   homepageSections?: Record<string, HomepageSectionConfig>;
+  universeSection?: UniverseSectionConfig;
   brandStatement?: {
     eyebrow: string;
     heading: string;
