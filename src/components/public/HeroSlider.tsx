@@ -247,16 +247,18 @@ export const HeroSlider: React.FC = () => {
       aria-label="Image Banner Slider"
     >
       {/* Aspect Ratio Container for Banner - Clean & Crystal Clear */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[82vh] overflow-hidden bg-zinc-100">
-        <AnimatePresence initial={false} custom={direction}>
+      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[82vh] overflow-hidden bg-black">
+        <AnimatePresence initial={false}>
           <motion.div
             key={currentSlide.id}
-            custom={direction}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 1.03 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: 'easeInOut' }}
-            className="absolute inset-0 w-full h-full"
+            transition={{
+              opacity: { duration: 1.2, ease: [0.4, 0, 0.2, 1] },
+              scale: { duration: 6.0, ease: 'easeOut' },
+            }}
+            className="absolute inset-0 w-full h-full will-change-[opacity,transform]"
           >
             {/* Desktop Image */}
             <div className="absolute inset-0 hidden sm:block w-full h-full">
