@@ -1,26 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Menu, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Menu, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FullscreenNavOverlay } from './FullscreenNavOverlay';
-import { STARGAZE_LOGO_PATH } from '../../data/media';
+import { StargazeHorizontalLogo } from '../common/StargazeHorizontalLogo';
 import { getMediaForSlot } from '../../lib/mediaResolver';
+import { getBrandSettings } from '../../lib/cmsService';
 
 export const PublicHeader: React.FC = () => {
   const [navOverlayOpen, setNavOverlayOpen] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string>('');
-  const [logoAlt, setLogoAlt] = useState<string>('Stargaze Media & Entertainment');
-  const [logoError, setLogoError] = useState(false);
+  const [logoAlt, setLogoAlt] = useState<string>('Stargaze Media - We Create What The World Watches');
   const { user, profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
-    getMediaForSlot('brand.logo').then((res) => {
-      if (isMounted && res.url) {
-        setLogoUrl(res.url);
-        if (res.alt) setLogoAlt(res.alt);
-        setLogoError(false);
-      }
-    });
+    
+    // First try brand settings from CMS, then fallback to slot
+    getBrandSettings()
+      .then((brand) => {
+        if (isMounted && (brand?.primaryLogoUrl || brand?.altLogoUrl)) {
+          setLogoUrl(brand.primaryLogoUrl || brand.altLogoUrl || '');
+          if (brand.brandName) setLogoAlt(brand.brandName);
+        } else {
+          return getMediaForSlot('brand.logo').then((res) => {
+            if (isMounted && res.url) {
+              setLogoUrl(res.url);
+              if (res.alt) setLogoAlt(res.alt);
+            }
+          });
+        }
+      })
+      .catch(() => {
+        getMediaForSlot('brand.logo').then((res) => {
+          if (isMounted && res.url) {
+            setLogoUrl(res.url);
+            if (res.alt) setLogoAlt(res.alt);
+          }
+        });
+      });
+
     return () => {
       isMounted = false;
     };
@@ -28,33 +46,16 @@ export const PublicHeader: React.FC = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 transition duration-300 shadow-xs">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-b border-zinc-200/80 transition duration-300 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            {/* Logo */}
-            <a href="/" className="flex items-center gap-3.5 group" data-cursor="VIEW">
-              <div className="relative h-11 w-11 rounded-xl bg-amber-500/10 border border-[#D97706]/40 flex items-center justify-center text-black font-extrabold shadow-sm group-hover:border-[#D97706] group-hover:scale-105 transition overflow-hidden p-1">
-                {logoUrl && !logoError ? (
-                  <img
-                    src={logoUrl}
-                    alt={logoAlt}
-                    className="w-full h-full object-contain"
-                    onError={() => setLogoError(true)}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-tr from-[#D97706] to-amber-400 flex items-center justify-center rounded-lg shadow-inner">
-                    <Sparkles className="w-5 h-5 fill-white text-white" />
-                  </div>
-                )}
-              </div>
-              <div>
-                <span className="text-xl font-black tracking-[0.2em] text-zinc-900 block uppercase font-serif-cinematic">
-                  STARGAZE
-                </span>
-                <span className="text-[9px] tracking-[0.25em] text-[#B45309] block uppercase font-mono font-bold">
-                  MEDIA & ENTERTAINMENT
-                </span>
-              </div>
+            {/* Horizontal Brand Logo without any border or boxes */}
+            <a href="/" className="inline-flex items-center group py-1" data-cursor="VIEW" aria-label="Stargaze Media Home">
+              <StargazeHorizontalLogo
+                customLogoUrl={logoUrl}
+                alt={logoAlt}
+                className="h-10 sm:h-12 w-auto max-w-[220px] sm:max-w-[280px]"
+              />
             </a>
 
             {/* Desktop Navigation Links */}

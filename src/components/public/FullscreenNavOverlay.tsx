@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ArrowRight, Sparkles, ExternalLink } from 'lucide-react';
 import { getMediaForSlot } from '../../lib/mediaResolver';
 import { StargazeImage } from '../common/StargazeImage';
+import { StargazeHorizontalLogo } from '../common/StargazeHorizontalLogo';
 
 interface FullscreenNavOverlayProps {
   isOpen: boolean;
@@ -119,20 +120,12 @@ export const FullscreenNavOverlay: React.FC<FullscreenNavOverlayProps> = ({ isOp
 
       {/* Header bar inside overlay */}
       <div className="relative z-10 max-w-7xl w-full mx-auto px-6 py-6 flex items-center justify-between border-b border-zinc-200">
-        <div className="flex items-center gap-3">
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt="Stargaze Media"
-              className="h-10 w-auto max-w-[140px] object-contain"
-              referrerPolicy="no-referrer"
-            />
-          ) : (
-            <div className="w-8 h-8 rounded-lg bg-[#D97706] flex items-center justify-center text-white font-black">
-              <Sparkles className="w-4 h-4 fill-white" />
-            </div>
-          )}
-          <span className="text-lg font-black tracking-widest font-serif-cinematic text-zinc-900">STARGAZE UNIVERSE</span>
+        <div className="flex items-center">
+          <StargazeHorizontalLogo
+            customLogoUrl={logoUrl || undefined}
+            alt="Stargaze Universe"
+            className="h-10 w-auto max-w-[200px]"
+          />
         </div>
 
         <button

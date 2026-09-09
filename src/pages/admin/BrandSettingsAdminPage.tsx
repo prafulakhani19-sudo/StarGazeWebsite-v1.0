@@ -6,9 +6,10 @@ import { assignMediaToSlot } from '../../lib/mediaResolver';
 import { BrandSettings } from '../../types';
 import { MediaPickerModal } from '../../components/admin/MediaPickerModal';
 import { StargazeImage } from '../../components/common/StargazeImage';
+import { StargazeHorizontalLogo } from '../../components/common/StargazeHorizontalLogo';
 import { 
   Sparkles, Check, RefreshCw, Image as ImageIcon, Sliders, 
-  Palette, Building2, Globe 
+  Palette, Building2, Globe, Eye 
 } from 'lucide-react';
 
 export const BrandSettingsAdminPage: React.FC = () => {
@@ -153,48 +154,98 @@ export const BrandSettingsAdminPage: React.FC = () => {
                 <Palette className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-white uppercase font-mono">Brand Logo Assets</h2>
-                <p className="text-xs text-zinc-400">Managed through Firebase Media Library with instant preview</p>
+                <h2 className="text-base font-bold text-white uppercase font-mono">Brand & Logo Management</h2>
+                <p className="text-xs text-zinc-400">Control the horizontal studio logo, light/dark variants, and live header branding</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Primary Logo */}
-              <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-white">Primary Studio Logo</span>
-                  <button
-                    type="button"
-                    onClick={() => setMediaPickerTarget('primary')}
-                    className="text-[10px] font-mono text-amber-400 hover:underline"
-                  >
-                    Select Asset
-                  </button>
+            {/* Main Horizontal Logo Management Card */}
+            <div className="p-6 rounded-2xl bg-zinc-950 border border-amber-500/30 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <span className="text-sm font-mono font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    Primary Horizontal Studio Logo (Header & Footer)
+                  </span>
+                  <p className="text-xs text-zinc-400 mt-0.5">
+                    This logo is rendered cleanly across the public header, fullscreen navigation overlay, and footer without any surrounding borders.
+                  </p>
                 </div>
-                <div className="h-24 bg-black/60 border border-zinc-800 rounded-xl flex items-center justify-center p-3">
-                  {settings.primaryLogoUrl ? (
-                    <StargazeImage
-                      src={settings.primaryLogoUrl}
-                      alt="Primary Logo"
-                      className="max-h-full max-w-full object-contain"
-                    />
-                  ) : (
-                    <span className="text-[10px] text-zinc-600 font-mono">No Logo Set</span>
-                  )}
-                </div>
-                <input
-                  type="text"
-                  value={settings.primaryLogoUrl || ''}
-                  onChange={(e) => setSettings({ ...settings, primaryLogoUrl: e.target.value })}
-                  placeholder="URL or select from library..."
-                  className="w-full px-2.5 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-[11px] font-mono text-zinc-300"
-                />
+                <button
+                  type="button"
+                  onClick={() => setMediaPickerTarget('primary')}
+                  className="px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-mono font-bold uppercase transition flex items-center gap-1.5 self-start sm:self-auto"
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  Select Asset from Library
+                </button>
               </div>
 
-              {/* Light Mode Logo */}
+              {/* Dual Previews (Light Mode & Dark Mode Preview) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                {/* Light Mode Preview */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-zinc-300" />
+                    Preview on Light Background (Public Site Header)
+                  </span>
+                  <div className="h-24 bg-white border border-zinc-200 rounded-xl flex items-center justify-center p-4 overflow-hidden">
+                    <StargazeHorizontalLogo
+                      customLogoUrl={settings.primaryLogoUrl || undefined}
+                      alt="Primary Studio Logo"
+                      className="max-h-12 w-auto object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* Dark Canvas Preview */}
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-zinc-800" />
+                    Preview on Dark Background
+                  </span>
+                  <div className="h-24 bg-zinc-950 border border-zinc-800 rounded-xl flex items-center justify-center p-4 overflow-hidden">
+                    <StargazeHorizontalLogo
+                      customLogoUrl={settings.primaryLogoUrl || undefined}
+                      alt="Primary Studio Logo"
+                      className="max-h-12 w-auto object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* URL Input */}
+              <div className="space-y-1 pt-1">
+                <label className="block text-xs font-mono text-zinc-300">
+                  Logo Image URL / CDN Link (PNG, SVG, or WebP)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={settings.primaryLogoUrl || ''}
+                    onChange={(e) => setSettings({ ...settings, primaryLogoUrl: e.target.value })}
+                    placeholder="e.g. /assets/stargaze/brand/stargaze-logo.png or https://..."
+                    className="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-mono text-zinc-200 focus:outline-none focus:border-amber-500"
+                  />
+                  {settings.primaryLogoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setSettings({ ...settings, primaryLogoUrl: '', primaryLogoMediaId: '' })}
+                      className="px-3 py-2 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 rounded-xl text-xs font-mono transition"
+                    >
+                      Reset
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Variants */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              {/* Light Mode Specific Variant */}
               <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-white">Light Mode Logo</span>
+                  <span className="text-xs font-mono font-bold text-white">Secondary / Alt Logo</span>
                   <button
                     type="button"
                     onClick={() => setMediaPickerTarget('light')}
@@ -203,22 +254,22 @@ export const BrandSettingsAdminPage: React.FC = () => {
                     Select Asset
                   </button>
                 </div>
-                <div className="h-24 bg-zinc-200 border border-zinc-300 rounded-xl flex items-center justify-center p-3">
+                <div className="h-20 bg-zinc-100 border border-zinc-300 rounded-xl flex items-center justify-center p-3">
                   {settings.lightLogoUrl ? (
                     <StargazeImage
                       src={settings.lightLogoUrl}
-                      alt="Light Logo"
+                      alt="Alt Logo"
                       className="max-h-full max-w-full object-contain"
                     />
                   ) : (
-                    <span className="text-[10px] text-zinc-500 font-mono">No Logo Set</span>
+                    <span className="text-[10px] text-zinc-500 font-mono">Uses Primary Logo</span>
                   )}
                 </div>
                 <input
                   type="text"
                   value={settings.lightLogoUrl || ''}
                   onChange={(e) => setSettings({ ...settings, lightLogoUrl: e.target.value })}
-                  placeholder="URL or select from library..."
+                  placeholder="Optional alt logo URL..."
                   className="w-full px-2.5 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-[11px] font-mono text-zinc-300"
                 />
               </div>
@@ -226,7 +277,7 @@ export const BrandSettingsAdminPage: React.FC = () => {
               {/* Dark / Gold Variant */}
               <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-white">Dark / Gold Variant</span>
+                  <span className="text-xs font-mono font-bold text-white">Dark / Monochrome Variant</span>
                   <button
                     type="button"
                     onClick={() => setMediaPickerTarget('dark')}
@@ -235,7 +286,7 @@ export const BrandSettingsAdminPage: React.FC = () => {
                     Select Asset
                   </button>
                 </div>
-                <div className="h-24 bg-black border border-zinc-800 rounded-xl flex items-center justify-center p-3">
+                <div className="h-20 bg-black border border-zinc-800 rounded-xl flex items-center justify-center p-3">
                   {settings.darkLogoUrl ? (
                     <StargazeImage
                       src={settings.darkLogoUrl}
@@ -243,14 +294,14 @@ export const BrandSettingsAdminPage: React.FC = () => {
                       className="max-h-full max-w-full object-contain"
                     />
                   ) : (
-                    <span className="text-[10px] text-zinc-600 font-mono">No Logo Set</span>
+                    <span className="text-[10px] text-zinc-600 font-mono">Uses Primary Logo</span>
                   )}
                 </div>
                 <input
                   type="text"
                   value={settings.darkLogoUrl || ''}
                   onChange={(e) => setSettings({ ...settings, darkLogoUrl: e.target.value })}
-                  placeholder="URL or select from library..."
+                  placeholder="Optional dark variant URL..."
                   className="w-full px-2.5 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-[11px] font-mono text-zinc-300"
                 />
               </div>

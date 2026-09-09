@@ -1,17 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Film, Camera, Globe, Mail, Phone, MapPin } from 'lucide-react';
+import { StargazeHorizontalLogo } from '../common/StargazeHorizontalLogo';
 import { getMediaForSlot } from '../../lib/mediaResolver';
+import { getBrandSettings } from '../../lib/cmsService';
 
 export const PublicFooter: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    getMediaForSlot('brand.logo').then((res) => {
-      if (isMounted && res.url) {
-        setLogoUrl(res.url);
-      }
-    });
+    getBrandSettings()
+      .then((brand) => {
+        if (isMounted && (brand?.primaryLogoUrl || brand?.altLogoUrl)) {
+          setLogoUrl(brand.primaryLogoUrl || brand.altLogoUrl || null);
+        } else {
+          return getMediaForSlot('brand.logo').then((res) => {
+            if (isMounted && res.url) {
+              setLogoUrl(res.url);
+            }
+          });
+        }
+      })
+      .catch(() => {
+        getMediaForSlot('brand.logo').then((res) => {
+          if (isMounted && res.url) {
+            setLogoUrl(res.url);
+          }
+        });
+      });
+
     return () => {
       isMounted = false;
     };
@@ -22,22 +39,12 @@ export const PublicFooter: React.FC = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand */}
         <div className="space-y-4 md:col-span-1">
-          <div className="flex items-center gap-3">
-            {logoUrl ? (
-              <img
-                src={logoUrl}
-                alt="Stargaze Media"
-                className="h-10 w-auto max-w-[120px] object-contain"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="w-8 h-8 rounded-lg bg-[#D97706] flex items-center justify-center text-white font-black">
-                <Sparkles className="w-5 h-5 fill-white text-white" />
-              </div>
-            )}
-            <span className="text-lg font-bold tracking-widest text-zinc-900 uppercase font-serif-cinematic">
-              STARGAZE MEDIA
-            </span>
+          <div className="flex items-center">
+            <StargazeHorizontalLogo
+              customLogoUrl={logoUrl || undefined}
+              alt="Stargaze Media"
+              className="h-10 w-auto max-w-[200px]"
+            />
           </div>
           <p className="text-xs text-zinc-500 leading-relaxed">
             A premium cinematic digital universe. Film studio, IMAX visual productions, rental camera systems, and global content distribution.
