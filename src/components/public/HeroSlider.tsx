@@ -246,8 +246,8 @@ export const HeroSlider: React.FC = () => {
       onTouchEnd={handleTouchEnd}
       aria-label="Image Banner Slider"
     >
-      {/* Aspect Ratio Container for Banner - Clean & Crystal Clear */}
-      <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[82vh] overflow-hidden bg-black">
+      {/* Aspect Ratio Container for Banner - 9:16 on Mobile & 16:9 / 21:9 on Desktop */}
+      <div className="relative w-full aspect-[9/16] sm:aspect-[16/9] lg:aspect-[21/9] sm:max-h-[82vh] overflow-hidden bg-black">
         <AnimatePresence initial={false}>
           <motion.div
             key={currentSlide.id}

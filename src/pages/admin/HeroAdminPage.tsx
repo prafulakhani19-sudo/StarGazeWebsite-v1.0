@@ -402,7 +402,7 @@ export const HeroAdminPage: React.FC = () => {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-mono font-bold text-white flex items-center gap-1.5">
-                          <Smartphone className="w-3.5 h-3.5 text-amber-400" /> Mobile Artwork (4:5 / 9:16)
+                          <Smartphone className="w-3.5 h-3.5 text-amber-400" /> Mobile Artwork (9:16 Portrait)
                         </span>
                         <button
                           type="button"
@@ -413,7 +413,7 @@ export const HeroAdminPage: React.FC = () => {
                         </button>
                       </div>
 
-                      <div className="aspect-[16/9] rounded-xl bg-black border border-zinc-800 overflow-hidden relative">
+                      <div className="aspect-[9/16] max-h-56 mx-auto rounded-xl bg-black border border-zinc-800 overflow-hidden relative">
                         {editingSlide.mobileSrc ? (
                           <StargazeImage
                             src={editingSlide.mobileSrc}
@@ -422,7 +422,7 @@ export const HeroAdminPage: React.FC = () => {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-xs text-zinc-500 font-mono">
+                          <div className="w-full h-full flex items-center justify-center text-xs text-zinc-500 font-mono text-center p-2">
                             No Mobile Asset (falls back to desktop)
                           </div>
                         )}
