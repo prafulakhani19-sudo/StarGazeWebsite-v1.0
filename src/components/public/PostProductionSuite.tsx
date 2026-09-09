@@ -40,7 +40,7 @@ export const PostProductionSuite: React.FC = () => {
       const height = canvas.height;
 
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#E5C158';
+      ctx.strokeStyle = '#D97706';
       ctx.beginPath();
 
       const bars = 48;
@@ -51,7 +51,7 @@ export const PostProductionSuite: React.FC = () => {
         const amplitude = Math.sin(phase + i * 0.3) * (height / 3) + Math.cos(phase * 1.5 + i * 0.2) * (height / 4);
         const barHeight = Math.max(8, Math.abs(amplitude));
 
-        ctx.fillStyle = i % 2 === 0 ? '#E5C158' : '#F4F4F0';
+        ctx.fillStyle = i % 2 === 0 ? '#D97706' : '#F59E0B';
         ctx.fillRect(x - 2, height / 2 - barHeight / 2, 4, barHeight);
       }
 
@@ -65,19 +65,19 @@ export const PostProductionSuite: React.FC = () => {
   }, [activeMode]);
 
   return (
-    <section className="py-24 bg-[#0A0A0C] border-t border-white/5 relative">
+    <section className="py-24 bg-white border-t border-zinc-200/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-white/10 pb-6 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-zinc-200 pb-6 gap-4">
           <div>
-            <span className="text-[#E5C158] text-xs font-mono tracking-widest uppercase block mb-2">
+            <span className="text-[#B45309] text-xs font-mono font-bold tracking-widest uppercase block mb-2">
               TECHNICAL SUITE // POST-PRODUCTION
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black font-serif-cinematic text-white uppercase">
+            <h2 className="text-3xl sm:text-5xl font-black font-serif-cinematic text-zinc-900 uppercase">
               POST & VISUAL EFFECTS SUITE
             </h2>
           </div>
-          <p className="text-zinc-400 font-sans text-xs sm:text-sm max-w-md">
+          <p className="text-zinc-600 font-sans text-xs sm:text-sm max-w-md">
             Interactive control suite. Switch modes to inspect live color LUT grading, wireframe VFX overlays, and acoustic sound waveforms.
           </p>
         </div>
@@ -93,8 +93,8 @@ export const PostProductionSuite: React.FC = () => {
                 data-cursor="VIEW"
                 className={`px-5 py-2.5 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition border ${
                   isActive
-                    ? 'bg-[#E5C158] text-black border-[#E5C158] shadow-lg shadow-[#E5C158]/20'
-                    : 'bg-white/5 text-zinc-400 border-white/10 hover:border-white/30 hover:text-white'
+                    ? 'bg-[#D97706] text-white border-[#D97706] shadow-lg shadow-amber-500/20'
+                    : 'bg-zinc-50 text-zinc-600 border-zinc-200 hover:border-amber-400 hover:text-zinc-900'
                 }`}
               >
                 {mode}
@@ -104,11 +104,11 @@ export const PostProductionSuite: React.FC = () => {
         </div>
 
         {/* Main Central Interactive Cinema Suite Display */}
-        <div className="bg-zinc-950 border border-white/10 rounded-3xl p-6 lg:p-10 relative overflow-hidden">
+        <div className="bg-[#F8F9FA] border border-zinc-200 rounded-3xl p-6 lg:p-10 relative overflow-hidden shadow-lg">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Live Interactive Preview Screen (Left 8 Cols) */}
             <div className="lg:col-span-8 relative">
-              <div className="aspect-[16/9] rounded-2xl overflow-hidden border border-[#E5C158]/30 relative bg-black shadow-2xl">
+              <div className="aspect-[16/9] rounded-2xl overflow-hidden border border-zinc-300 relative bg-black shadow-2xl">
                 {/* Image under test */}
                 <img
                   src="https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80"
@@ -122,11 +122,11 @@ export const PostProductionSuite: React.FC = () => {
                 {/* VFX Mode Overlay Wireframe Grid */}
                 {activeMode === 'VFX' && (
                   <div className="absolute inset-0 bg-blue-500/10 pointer-events-none flex items-center justify-center">
-                    <div className="w-full h-full border-4 border-dashed border-[#E5C158]/50 flex items-center justify-center relative">
-                      <div className="absolute inset-x-0 top-1/2 h-px bg-[#E5C158]/40" />
-                      <div className="absolute inset-y-0 left-1/2 w-px bg-[#E5C158]/40" />
-                      <div className="w-48 h-48 border-2 border-cyan-400 rounded-full animate-ping opacity-30" />
-                      <span className="absolute bottom-4 right-4 bg-black/80 text-cyan-400 font-mono text-[10px] px-3 py-1 rounded border border-cyan-500/40">
+                    <div className="w-full h-full border-4 border-dashed border-[#F59E0B]/60 flex items-center justify-center relative">
+                      <div className="absolute inset-x-0 top-1/2 h-px bg-[#F59E0B]/50" />
+                      <div className="absolute inset-y-0 left-1/2 w-px bg-[#F59E0B]/50" />
+                      <div className="w-48 h-48 border-2 border-cyan-400 rounded-full animate-ping opacity-40" />
+                      <span className="absolute bottom-4 right-4 bg-black/85 text-cyan-300 font-mono text-[10px] px-3 py-1 rounded border border-cyan-500/40">
                         VFX DEPTH PASS // 8K RENDER MESH ACTIVE
                       </span>
                     </div>
@@ -136,34 +136,34 @@ export const PostProductionSuite: React.FC = () => {
                 {/* EDIT Mode Timeline Overlay */}
                 {activeMode === 'EDIT' && (
                   <div className="absolute inset-x-0 bottom-0 p-4 bg-black/90 border-t border-white/20 font-mono text-xs">
-                    <div className="flex items-center justify-between mb-2 text-[#E5C158]">
+                    <div className="flex items-center justify-between mb-2 text-amber-300">
                       <span>TIMELINE TRACK // REEL 04</span>
                       <span>TC: 01:24:59:12</span>
                     </div>
                     <div className="grid grid-cols-6 gap-1.5 h-6">
-                      <div className="bg-amber-600/60 rounded flex items-center justify-center text-[9px] text-white">CUT 01</div>
-                      <div className="bg-blue-600/60 rounded flex items-center justify-center text-[9px] text-white">CUT 02</div>
-                      <div className="bg-[#E5C158]/80 text-black rounded font-bold flex items-center justify-center text-[9px]">ACTIVE SCENE</div>
-                      <div className="bg-purple-600/60 rounded flex items-center justify-center text-[9px] text-white">CUT 04</div>
-                      <div className="bg-emerald-600/60 rounded flex items-center justify-center text-[9px] text-white">CUT 05</div>
-                      <div className="bg-zinc-700/60 rounded flex items-center justify-center text-[9px] text-white">CUT 06</div>
+                      <div className="bg-amber-600/80 rounded flex items-center justify-center text-[9px] text-white">CUT 01</div>
+                      <div className="bg-blue-600/80 rounded flex items-center justify-center text-[9px] text-white">CUT 02</div>
+                      <div className="bg-[#D97706] text-white rounded font-bold flex items-center justify-center text-[9px]">ACTIVE SCENE</div>
+                      <div className="bg-purple-600/80 rounded flex items-center justify-center text-[9px] text-white">CUT 04</div>
+                      <div className="bg-emerald-600/80 rounded flex items-center justify-center text-[9px] text-white">CUT 05</div>
+                      <div className="bg-zinc-700/80 rounded flex items-center justify-center text-[9px] text-white">CUT 06</div>
                     </div>
                   </div>
                 )}
 
                 {/* SOUND Mode Waveform Canvas Overlay */}
                 {activeMode === 'SOUND' && (
-                  <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-6 space-y-4">
-                    <span className="text-xs font-mono text-[#E5C158] tracking-widest uppercase">
+                  <div className="absolute inset-0 bg-black/85 flex flex-col items-center justify-center p-6 space-y-4">
+                    <span className="text-xs font-mono text-amber-400 font-bold tracking-widest uppercase">
                       DOLBY ATMOS 7.1.4 SURROUND ACOUSTIC MONITOR
                     </span>
                     <canvas
                       ref={canvasRef}
                       width={600}
                       height={120}
-                      className="w-full max-w-lg h-32 rounded-xl bg-black/90 border border-[#E5C158]/30"
+                      className="w-full max-w-lg h-32 rounded-xl bg-black/90 border border-amber-500/40"
                     />
-                    <div className="flex items-center gap-6 font-mono text-xs text-zinc-400">
+                    <div className="flex items-center gap-6 font-mono text-xs text-zinc-300">
                       <span>L: -3.2 dB</span>
                       <span>C: -0.1 dB</span>
                       <span>R: -3.4 dB</span>
@@ -177,10 +177,10 @@ export const PostProductionSuite: React.FC = () => {
             {/* Mode Controls & Description (Right 4 Cols) */}
             <div className="lg:col-span-4 space-y-6">
               <div className="space-y-2">
-                <span className="text-xs font-mono text-[#E5C158] uppercase tracking-widest block">
+                <span className="text-xs font-mono text-[#B45309] font-bold uppercase tracking-widest block">
                   MODULE // {activeMode}
                 </span>
-                <h3 className="text-2xl font-bold font-serif-cinematic text-white">
+                <h3 className="text-2xl font-bold font-serif-cinematic text-zinc-900">
                   {activeMode === 'VFX' && 'PHOTOREALISTIC VFX & COMPOSITING'}
                   {activeMode === 'COLOUR' && 'DOLBY VISION 8K COLOR GRADING'}
                   {activeMode === 'EDIT' && 'NON-LINEAR EDITING & CONFORM'}
@@ -194,7 +194,7 @@ export const PostProductionSuite: React.FC = () => {
               {/* COLOUR LUT Selector if Colour Mode */}
               {activeMode === 'COLOUR' && (
                 <div className="space-y-3 pt-2">
-                  <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest block">
+                  <span className="text-xs font-mono text-zinc-500 font-bold uppercase tracking-widest block">
                     SELECT COLOR LUT PRESET:
                   </span>
                   <div className="space-y-2">
@@ -204,12 +204,12 @@ export const PostProductionSuite: React.FC = () => {
                         onClick={() => setActiveFilter(f)}
                         className={`w-full p-3 rounded-xl border text-left font-mono text-xs transition ${
                           activeFilter.id === f.id
-                            ? 'bg-[#E5C158]/20 border-[#E5C158] text-white'
-                            : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white'
+                            ? 'bg-amber-50 border-[#D97706] text-zinc-900 shadow-xs'
+                            : 'bg-white border-zinc-200 text-zinc-600 hover:text-zinc-900'
                         }`}
                       >
-                        <div className="font-bold text-[#E5C158]">{f.name}</div>
-                        <div className="text-[10px] text-zinc-400">{f.desc}</div>
+                        <div className="font-bold text-[#B45309]">{f.name}</div>
+                        <div className="text-[10px] text-zinc-500">{f.desc}</div>
                       </button>
                     ))}
                   </div>
@@ -217,25 +217,25 @@ export const PostProductionSuite: React.FC = () => {
               )}
 
               {/* Tech Specs */}
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2 font-mono text-xs">
-                <div className="flex justify-between text-zinc-400">
+              <div className="p-4 rounded-xl bg-white border border-zinc-200 space-y-2 font-mono text-xs shadow-xs">
+                <div className="flex justify-between text-zinc-500">
                   <span>RESOLUTION:</span>
-                  <span className="text-white font-bold">8K DCI (8192 x 4320)</span>
+                  <span className="text-zinc-900 font-bold">8K DCI (8192 x 4320)</span>
                 </div>
-                <div className="flex justify-between text-zinc-400">
+                <div className="flex justify-between text-zinc-500">
                   <span>BIT DEPTH:</span>
-                  <span className="text-white font-bold">16-bit float / ACES 1.3</span>
+                  <span className="text-zinc-900 font-bold">16-bit float / ACES 1.3</span>
                 </div>
-                <div className="flex justify-between text-zinc-400">
+                <div className="flex justify-between text-zinc-500">
                   <span>AUDIO CERT:</span>
-                  <span className="text-white font-bold">Dolby Atmos Premier</span>
+                  <span className="text-zinc-900 font-bold">Dolby Atmos Premier</span>
                 </div>
               </div>
 
               <div>
                 <a
                   href="/enquiry"
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#E5C158] text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#F0CE68] transition"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#D97706] text-white font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#B45309] transition shadow-md shadow-amber-600/20"
                 >
                   BOOK POST SUITE
                 </a>

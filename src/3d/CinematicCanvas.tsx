@@ -29,9 +29,9 @@ export const CinematicCanvas: React.FC = () => {
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
-    const amberColor = new THREE.Color('#f59e0b');
-    const blueColor = new THREE.Color('#3b82f6');
-    const goldColor = new THREE.Color('#d97706');
+    const amberColor = new THREE.Color('#d97706');
+    const blueColor = new THREE.Color('#2563eb');
+    const goldColor = new THREE.Color('#b45309');
 
     for (let i = 0; i < particleCount; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 80;
@@ -49,11 +49,11 @@ export const CinematicCanvas: React.FC = () => {
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 0.25,
+      size: 0.35,
       vertexColors: true,
       transparent: true,
-      opacity: 0.7,
-      blending: THREE.AdditiveBlending,
+      opacity: 0.5,
+      blending: THREE.NormalBlending,
     });
 
     const particles = new THREE.Points(geometry, material);
@@ -62,10 +62,10 @@ export const CinematicCanvas: React.FC = () => {
     // Cinematic Floating Torus Ring
     const ringGeo = new THREE.TorusGeometry(8, 0.08, 16, 100);
     const ringMat = new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
+      color: 0xd97706,
       wireframe: true,
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.3,
     });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
     ringMesh.rotation.x = Math.PI / 3;

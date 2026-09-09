@@ -32,15 +32,15 @@ export const EquipmentPage: React.FC = () => {
   const publishedEquipment = equipment.filter((e) => e.status === 'PUBLISHED');
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans">
+    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-[#D97706] selection:text-white">
       <PublicHeader />
       <main className="pt-28 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 border-b border-zinc-900 pb-8">
-          <div className="inline-flex items-center gap-2 text-amber-500 font-mono text-xs tracking-widest uppercase mb-2">
-            <Camera className="w-4 h-4" /> HARDWARE & PRODUCTION GEAR
+        <div className="mb-12 border-b border-zinc-200 pb-8">
+          <div className="inline-flex items-center gap-2 text-[#B45309] font-mono text-xs font-bold tracking-widest uppercase mb-2">
+            <Camera className="w-4 h-4 text-[#D97706]" /> HARDWARE & PRODUCTION GEAR
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight uppercase font-mono">EQUIPMENT RENTAL CATALOG</h1>
-          <p className="text-zinc-400 text-sm mt-2 max-w-2xl">
+          <h1 className="text-4xl font-extrabold tracking-tight uppercase font-serif-cinematic text-zinc-900">EQUIPMENT RENTAL CATALOG</h1>
+          <p className="text-zinc-600 text-sm mt-2 max-w-2xl">
             Industry-standard camera packages, anamorphic lens sets, DOP rigs, and lighting rentals available for studio booking.
           </p>
         </div>
@@ -49,21 +49,21 @@ export const EquipmentPage: React.FC = () => {
           {publishedEquipment.map((item) => (
             <div
               key={item.id}
-              className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 hover:border-amber-500/40 transition flex flex-col justify-between"
+              className="bg-[#F8F9FA] border border-zinc-200 rounded-2xl p-6 hover:border-amber-400 hover:shadow-lg transition flex flex-col justify-between"
             >
               <div>
-                <div className="aspect-[16/9] rounded-xl overflow-hidden mb-4 bg-zinc-950">
+                <div className="aspect-[16/9] rounded-xl overflow-hidden mb-4 bg-zinc-100">
                   <StargazeImage src={item.imageUrl} alt={item.name} focalPoint={item.focalPoint} className="w-full h-full object-cover" />
                 </div>
-                <span className="text-xs font-mono uppercase tracking-widest text-amber-500 block mb-1">{item.category}</span>
-                <h3 className="text-lg font-bold text-white mb-2">{item.name}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed mb-4">{item.specs}</p>
+                <span className="text-xs font-mono uppercase tracking-widest text-[#B45309] font-bold block mb-1">{item.category}</span>
+                <h3 className="text-lg font-bold font-serif-cinematic text-zinc-900 mb-2">{item.name}</h3>
+                <p className="text-xs text-zinc-600 leading-relaxed mb-4">{item.specs}</p>
               </div>
-              <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between font-mono text-xs">
-                <span className="text-amber-400 font-bold text-sm">${item.dailyRate} / day</span>
+              <div className="pt-4 border-t border-zinc-200 flex items-center justify-between font-mono text-xs">
+                <span className="text-[#B45309] font-bold text-sm">${item.dailyRate} / day</span>
                 <a
                   href="/enquiry"
-                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg uppercase text-[10px]"
+                  className="px-3 py-1.5 bg-[#D97706] hover:bg-[#B45309] text-white font-bold rounded-lg uppercase text-[10px] shadow-xs"
                 >
                   Book Equipment
                 </a>

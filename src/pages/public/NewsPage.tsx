@@ -32,25 +32,25 @@ export const NewsPage: React.FC = () => {
   const publishedNews = news.filter((n) => n.status === 'PUBLISHED');
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans">
+    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-[#D97706] selection:text-white">
       <PublicHeader />
       <main className="pt-28 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 border-b border-zinc-900 pb-8">
-          <div className="inline-flex items-center gap-2 text-amber-500 font-mono text-xs tracking-widest uppercase mb-2">
-            <Newspaper className="w-4 h-4" /> PRESS & INSIGHTS
+        <div className="mb-12 border-b border-zinc-200 pb-8">
+          <div className="inline-flex items-center gap-2 text-[#B45309] font-mono text-xs font-bold tracking-widest uppercase mb-2">
+            <Newspaper className="w-4 h-4 text-[#D97706]" /> PRESS & INSIGHTS
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight uppercase font-mono">NEWSROOM & ANNOUNCEMENTS</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight uppercase font-serif-cinematic text-zinc-900">NEWSROOM & ANNOUNCEMENTS</h1>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {publishedNews.map((article) => (
-            <div key={article.id} className="bg-zinc-900/60 border border-zinc-800 rounded-2xl overflow-hidden p-6 space-y-4">
-              <div className="aspect-[16/9] rounded-xl overflow-hidden bg-zinc-950">
+            <div key={article.id} className="bg-[#F8F9FA] border border-zinc-200 rounded-2xl overflow-hidden p-6 space-y-4 hover:border-amber-400 hover:shadow-lg transition">
+              <div className="aspect-[16/9] rounded-xl overflow-hidden bg-zinc-100 border border-zinc-200">
                 <StargazeImage src={article.imageUrl} alt={article.title} focalPoint={article.focalPoint} className="w-full h-full object-cover" />
               </div>
-              <span className="text-xs font-mono text-amber-500 uppercase tracking-widest">{article.category} • {article.publishDate}</span>
-              <h3 className="text-xl font-bold text-white">{article.title}</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">{article.summary}</p>
+              <span className="text-xs font-mono text-[#B45309] font-bold uppercase tracking-widest">{article.category} • {article.publishDate}</span>
+              <h3 className="text-xl font-bold font-serif-cinematic text-zinc-900">{article.title}</h3>
+              <p className="text-xs text-zinc-600 leading-relaxed">{article.summary}</p>
             </div>
           ))}
         </div>

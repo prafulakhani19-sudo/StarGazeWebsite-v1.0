@@ -74,12 +74,12 @@ export const CustomCursor: React.FC = () => {
       <div
         className={`rounded-full border transition-all duration-300 flex items-center justify-center ${
           isExpanded
-            ? 'w-16 h-16 bg-[#E5C158]/20 border-[#E5C158] backdrop-blur-xs scale-110 shadow-[0_0_25px_rgba(229,193,88,0.4)]'
-            : 'w-6 h-6 bg-white/10 border-white/40'
+            ? 'w-16 h-16 bg-[#D97706]/15 border-[#D97706] backdrop-blur-xs scale-110 shadow-[0_0_20px_rgba(217,119,6,0.35)]'
+            : 'w-6 h-6 bg-zinc-900/5 border-zinc-700/50 shadow-xs'
         }`}
       >
         {isExpanded && (
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#E5C158] select-none animate-fade-in">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#B45309] select-none animate-fade-in">
             {cursorType}
           </span>
         )}
@@ -87,7 +87,7 @@ export const CustomCursor: React.FC = () => {
 
       {/* Tiny Center Dot */}
       {!isExpanded && (
-        <div className="absolute w-1.5 h-1.5 bg-[#E5C158] rounded-full shadow-[0_0_8px_#E5C158]" />
+        <div className="absolute w-1.5 h-1.5 bg-[#D97706] rounded-full shadow-[0_0_6px_#D97706]" />
       )}
     </div>
   );

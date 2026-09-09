@@ -32,32 +32,32 @@ export const DistributionPage: React.FC = () => {
   const publishedDistribution = distribution.filter((d) => d.status === 'PUBLISHED');
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans">
+    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-[#D97706] selection:text-white">
       <PublicHeader />
       <main className="pt-28 pb-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 border-b border-zinc-900 pb-8">
-          <div className="inline-flex items-center gap-2 text-amber-500 font-mono text-xs tracking-widest uppercase mb-2">
-            <Globe className="w-4 h-4" /> GLOBAL LICENSING & RIGHTS
+        <div className="mb-12 border-b border-zinc-200 pb-8">
+          <div className="inline-flex items-center gap-2 text-[#B45309] font-mono text-xs font-bold tracking-widest uppercase mb-2">
+            <Globe className="w-4 h-4 text-[#D97706]" /> GLOBAL LICENSING & RIGHTS
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight uppercase font-mono">DISTRIBUTION CATALOG</h1>
-          <p className="text-zinc-400 text-sm mt-2 max-w-2xl">
+          <h1 className="text-4xl font-extrabold tracking-tight uppercase font-serif-cinematic text-zinc-900">DISTRIBUTION CATALOG</h1>
+          <p className="text-zinc-600 text-sm mt-2 max-w-2xl">
             Available film titles, series, and documentary features for international theatrical, SVOD, and broadcast acquisition.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {publishedDistribution.map((item) => (
-            <div key={item.id} className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 flex gap-6">
-              <div className="w-32 aspect-[3/4] rounded-lg overflow-hidden shrink-0 bg-zinc-950">
+            <div key={item.id} className="bg-[#F8F9FA] border border-zinc-200 rounded-2xl p-6 flex gap-6 hover:border-amber-400 hover:shadow-lg transition">
+              <div className="w-32 aspect-[3/4] rounded-lg overflow-hidden shrink-0 bg-zinc-100 border border-zinc-200">
                 <StargazeImage src={item.posterUrl} alt={item.title} focalPoint={item.focalPoint} className="w-full h-full object-cover" />
               </div>
               <div className="space-y-3 flex-1">
-                <span className="text-xs font-mono text-amber-500 uppercase tracking-widest">{item.type}</span>
-                <h3 className="text-xl font-bold text-white">{item.title}</h3>
-                <p className="text-xs text-zinc-400 line-clamp-2">{item.synopsis}</p>
-                <div className="space-y-1 text-xs font-mono text-zinc-400 pt-2 border-t border-zinc-800">
-                  <div>Territories: <span className="text-amber-400">{item.territories.join(', ')}</span></div>
-                  <div>Rights: <span className="text-zinc-300">{item.rightsAvailable.join(', ')}</span></div>
+                <span className="text-xs font-mono text-[#B45309] font-bold uppercase tracking-widest">{item.type}</span>
+                <h3 className="text-xl font-bold font-serif-cinematic text-zinc-900">{item.title}</h3>
+                <p className="text-xs text-zinc-600 line-clamp-2">{item.synopsis}</p>
+                <div className="space-y-1 text-xs font-mono text-zinc-600 pt-2 border-t border-zinc-200">
+                  <div>Territories: <span className="text-[#B45309] font-semibold">{item.territories.join(', ')}</span></div>
+                  <div>Rights: <span className="text-zinc-800 font-medium">{item.rightsAvailable.join(', ')}</span></div>
                 </div>
               </div>
             </div>

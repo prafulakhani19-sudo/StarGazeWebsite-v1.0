@@ -69,25 +69,25 @@ export const ProductionTimeline: React.FC = () => {
   const [activeStage, setActiveStage] = useState<TimelineStage>(STAGES[2]); // Default to Production
 
   return (
-    <section className="py-24 bg-[#0A0A0C] border-t border-white/5 relative">
+    <section className="py-24 bg-[#F8F9FA] border-t border-zinc-200/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 border-b border-white/10 pb-6 gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 border-b border-zinc-200 pb-6 gap-4">
           <div>
-            <span className="text-[#E5C158] text-xs font-mono tracking-widest uppercase block mb-2">
+            <span className="text-[#B45309] text-xs font-mono font-bold tracking-widest uppercase block mb-2">
               ECOSYSTEM // PRODUCTION PIPELINE
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black font-serif-cinematic text-white uppercase">
+            <h2 className="text-3xl sm:text-5xl font-black font-serif-cinematic text-zinc-900 uppercase">
               THE PRODUCTION TIMELINE
             </h2>
           </div>
-          <p className="text-zinc-400 font-sans text-xs sm:text-sm max-w-md">
+          <p className="text-zinc-600 font-sans text-xs sm:text-sm max-w-md">
             From initial screenplay coverage to large-format principal photography across global soundstages.
           </p>
         </div>
 
         {/* Timeline Stage Selector Buttons */}
-        <div className="flex flex-wrap gap-2 mb-12 border-b border-white/10 pb-4 overflow-x-auto">
+        <div className="flex flex-wrap gap-2 mb-12 border-b border-zinc-200 pb-4 overflow-x-auto">
           {STAGES.map((s) => {
             const isSelected = activeStage.id === s.id;
             return (
@@ -97,11 +97,11 @@ export const ProductionTimeline: React.FC = () => {
                 data-cursor="VIEW"
                 className={`px-5 py-3 rounded-xl font-mono text-xs font-bold uppercase tracking-wider transition flex items-center gap-3 ${
                   isSelected
-                    ? 'bg-[#E5C158] text-black shadow-lg shadow-[#E5C158]/20'
-                    : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
+                    ? 'bg-[#D97706] text-white shadow-lg shadow-amber-500/20'
+                    : 'bg-white text-zinc-600 border border-zinc-200 hover:text-zinc-900 hover:border-amber-400'
                 }`}
               >
-                <span className={isSelected ? 'text-black font-extrabold' : 'text-[#E5C158]'}>
+                <span className={isSelected ? 'text-white font-extrabold' : 'text-[#B45309]'}>
                   {s.step}
                 </span>
                 <span>{s.title.split('&')[0]}</span>
@@ -111,33 +111,33 @@ export const ProductionTimeline: React.FC = () => {
         </div>
 
         {/* Selected Stage Detail Showcase */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-zinc-950/80 border border-white/10 rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-white border border-zinc-200 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-lg">
           {/* Left Text Detail */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="flex items-center gap-3 text-xs font-mono text-[#E5C158]">
-              <span className="px-2.5 py-1 rounded bg-[#E5C158]/10 border border-[#E5C158]/30 font-bold">
+            <div className="flex items-center gap-3 text-xs font-mono text-[#B45309]">
+              <span className="px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 font-bold">
                 STAGE {activeStage.step}
               </span>
-              <span className="uppercase tracking-widest">{activeStage.subtitle}</span>
+              <span className="uppercase tracking-widest font-semibold">{activeStage.subtitle}</span>
             </div>
 
-            <h3 className="text-3xl sm:text-4xl font-bold font-serif-cinematic text-white leading-tight">
+            <h3 className="text-3xl sm:text-4xl font-bold font-serif-cinematic text-zinc-900 leading-tight">
               {activeStage.title}
             </h3>
 
-            <p className="text-zinc-300 font-sans text-sm sm:text-base leading-relaxed">
+            <p className="text-zinc-600 font-sans text-sm sm:text-base leading-relaxed">
               {activeStage.description}
             </p>
 
             {/* Deliverables Checklist */}
             <div className="space-y-2 pt-2">
-              <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest block mb-2">
+              <span className="text-xs font-mono text-zinc-500 font-bold uppercase tracking-widest block mb-2">
                 KEY DELIVERABLES:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {activeStage.deliverables.map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-xs font-sans text-white">
-                    <CheckCircle2 className="w-4 h-4 text-[#E5C158] shrink-0" />
+                  <div key={idx} className="flex items-center gap-2 text-xs font-sans text-zinc-800 font-medium">
+                    <CheckCircle2 className="w-4 h-4 text-[#D97706] shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -145,11 +145,11 @@ export const ProductionTimeline: React.FC = () => {
             </div>
 
             {/* Technical Specs Bar */}
-            <div className="pt-4 border-t border-white/10 grid grid-cols-3 gap-4 font-mono text-xs">
+            <div className="pt-4 border-t border-zinc-100 grid grid-cols-3 gap-4 font-mono text-xs">
               {Object.entries(activeStage.specs).map(([key, val]) => (
                 <div key={key}>
-                  <span className="text-zinc-500 block text-[10px] uppercase">{key}</span>
-                  <span className="text-[#E5C158] font-bold">{val}</span>
+                  <span className="text-zinc-400 block text-[10px] uppercase font-bold">{key}</span>
+                  <span className="text-[#B45309] font-bold">{val}</span>
                 </div>
               ))}
             </div>
@@ -157,7 +157,7 @@ export const ProductionTimeline: React.FC = () => {
             <div className="pt-2">
               <a
                 href="/enquiry"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-[#E5C158] hover:text-black border border-white/20 text-xs font-mono font-bold tracking-wider uppercase transition"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-50 hover:bg-[#D97706] hover:text-white border border-amber-500/40 text-[#B45309] text-xs font-mono font-bold tracking-wider uppercase transition"
               >
                 REQUEST STAGE SUPPORT <ArrowRight className="w-4 h-4" />
               </a>
@@ -166,13 +166,13 @@ export const ProductionTimeline: React.FC = () => {
 
           {/* Right Stage Imagery */}
           <div className="lg:col-span-6">
-            <div className="aspect-[16/10] rounded-2xl overflow-hidden border border-white/20 relative group">
+            <div className="aspect-[16/10] rounded-2xl overflow-hidden border border-zinc-200 relative group shadow-md">
               <img
                 src={activeStage.image}
                 alt={activeStage.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
             </div>
           </div>
         </div>

@@ -86,23 +86,23 @@ export const StargazeUniverse3D: React.FC = () => {
   const [activeWorld, setActiveWorld] = useState<WorldItem>(STARGAZE_WORLDS[0]);
 
   return (
-    <div className="py-24 bg-[#0A0A0C] border-t border-white/5 relative overflow-hidden">
+    <div className="py-24 bg-white border-t border-zinc-200/80 relative overflow-hidden">
       {/* Moving Spatial Ambient Background */}
-      <div className="absolute inset-0 pointer-events-none opacity-20">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial from-[#E5C158]/30 via-transparent to-transparent blur-[140px]" />
+      <div className="absolute inset-0 pointer-events-none opacity-30">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial from-amber-200/40 via-transparent to-transparent blur-[140px]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Intro */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E5C158]/10 border border-[#E5C158]/30 text-[#E5C158] font-mono text-xs tracking-widest uppercase">
-            <Sparkles className="w-3.5 h-3.5 fill-[#E5C158]" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[#B45309] font-mono text-xs font-bold tracking-widest uppercase">
+            <Sparkles className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />
             SPATIAL DIRECTORY
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black font-serif-cinematic tracking-tight uppercase text-white">
+          <h2 className="text-3xl sm:text-5xl font-black font-serif-cinematic tracking-tight uppercase text-zinc-900">
             THE STARGAZE UNIVERSE
           </h2>
-          <p className="text-zinc-400 font-sans text-sm sm:text-base leading-relaxed">
+          <p className="text-zinc-600 font-sans text-sm sm:text-base leading-relaxed">
             Six interconnected cinema domains powering entertainment from script to global screens.
           </p>
         </div>
@@ -121,8 +121,8 @@ export const StargazeUniverse3D: React.FC = () => {
                 data-cursor="EXPLORE"
                 className={`group relative rounded-2xl overflow-hidden p-6 transition-all duration-500 flex flex-col justify-between aspect-[4/5] border ${
                   isActive
-                    ? 'border-[#E5C158] bg-zinc-900/90 shadow-[0_0_40px_rgba(229,193,88,0.2)] -translate-y-2'
-                    : 'border-white/10 bg-zinc-950/80 hover:border-white/30 hover:-translate-y-1'
+                    ? 'border-[#D97706] bg-white shadow-xl shadow-amber-500/15 -translate-y-2'
+                    : 'border-zinc-200 bg-[#F8F9FA] hover:border-zinc-300 hover:shadow-md hover:-translate-y-1'
                 }`}
               >
                 {/* Background Frame Image */}
@@ -131,19 +131,19 @@ export const StargazeUniverse3D: React.FC = () => {
                     src={world.imageUrl}
                     alt={world.name}
                     className={`w-full h-full object-cover transition-transform duration-700 ${
-                      isActive ? 'scale-110 opacity-40' : 'scale-100 opacity-20 group-hover:opacity-30'
+                      isActive ? 'scale-110 opacity-30' : 'scale-100 opacity-15 group-hover:opacity-25'
                     }`}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/70 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent" />
                 </div>
 
                 {/* Top Header inside Frame */}
                 <div className="relative z-10 flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-[#E5C158] tracking-widest">
+                  <span className="font-mono text-xs font-bold text-[#B45309] tracking-widest">
                     WORLD // {world.code}
                   </span>
                   <div className={`p-2.5 rounded-xl border transition ${
-                    isActive ? 'bg-[#E5C158] text-black border-[#E5C158]' : 'bg-white/5 text-white border-white/10'
+                    isActive ? 'bg-[#D97706] text-white border-[#D97706] shadow-sm' : 'bg-white text-zinc-700 border-zinc-200 shadow-xs'
                   }`}>
                     <Icon className="w-4 h-4" />
                   </div>
@@ -151,19 +151,19 @@ export const StargazeUniverse3D: React.FC = () => {
 
                 {/* Bottom Content inside Frame */}
                 <div className="relative z-10 space-y-3">
-                  <span className="text-[10px] font-mono text-[#E5C158] uppercase tracking-widest block">
+                  <span className="text-[10px] font-mono text-[#B45309] font-bold uppercase tracking-widest block">
                     {world.tagline}
                   </span>
-                  <h3 className="text-2xl font-black font-serif-cinematic text-white group-hover:text-[#E5C158] transition">
+                  <h3 className="text-2xl font-black font-serif-cinematic text-zinc-900 group-hover:text-[#D97706] transition">
                     {world.name}
                   </h3>
-                  <p className="text-xs text-zinc-300 font-sans leading-relaxed line-clamp-2">
+                  <p className="text-xs text-zinc-600 font-sans leading-relaxed line-clamp-2">
                     {world.desc}
                   </p>
 
-                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono">
-                    <span className="text-zinc-400">{world.stats}</span>
-                    <span className="text-[#E5C158] font-bold flex items-center gap-1 group-hover:translate-x-1 transition">
+                  <div className="pt-4 border-t border-zinc-200 flex items-center justify-between text-xs font-mono">
+                    <span className="text-zinc-500">{world.stats}</span>
+                    <span className="text-[#B45309] font-bold flex items-center gap-1 group-hover:translate-x-1 transition">
                       ENTER WORLD <ArrowUpRight className="w-3.5 h-3.5" />
                     </span>
                   </div>

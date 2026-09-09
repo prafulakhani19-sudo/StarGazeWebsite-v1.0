@@ -75,22 +75,22 @@ export const CapabilitiesPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>(CATEGORIES[0]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0C] text-[#F4F4F0] font-sans selection:bg-[#E5C158] selection:text-black">
+    <div className="min-h-screen bg-white text-zinc-900 font-sans selection:bg-[#D97706] selection:text-white">
       <PublicHeader />
 
       {/* Hero Header */}
-      <section className="pt-32 pb-20 bg-gradient-to-b from-zinc-900 to-[#0A0A0C] border-b border-white/10 px-4 sm:px-6 lg:px-8">
+      <section className="pt-32 pb-20 bg-[#F8F9FA] border-b border-zinc-200 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#E5C158]/10 border border-[#E5C158]/30 text-[#E5C158] font-mono text-xs tracking-widest uppercase">
-            <Sparkles className="w-3.5 h-3.5 fill-[#E5C158]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[#B45309] font-mono text-xs font-bold tracking-widest uppercase">
+            <Sparkles className="w-3.5 h-3.5 fill-[#D97706] text-[#D97706]" />
             STUDIO ARCHITECTURE & SERVICES
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-serif-cinematic tracking-tight uppercase text-white">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-serif-cinematic tracking-tight uppercase text-zinc-900">
             ENTERTAINMENT CAPABILITIES
           </h1>
 
-          <p className="text-zinc-300 max-w-3xl mx-auto text-base sm:text-lg font-light leading-relaxed">
+          <p className="text-zinc-600 max-w-3xl mx-auto text-base sm:text-lg font-light leading-relaxed">
             Stargaze Media operates a vertically integrated studio infrastructure encompassing 20+ specialized media services from script development to global distribution.
           </p>
         </div>
@@ -101,7 +101,7 @@ export const CapabilitiesPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Category Selector Sidebar (Left 4 Cols) */}
           <div className="lg:col-span-4 space-y-3">
-            <span className="text-xs font-mono text-[#E5C158] uppercase tracking-widest block mb-2">
+            <span className="text-xs font-mono text-[#B45309] font-bold uppercase tracking-widest block mb-2">
               SELECT CAPABILITY DIVISION
             </span>
             {CATEGORIES.map((cat) => {
@@ -115,15 +115,15 @@ export const CapabilitiesPage: React.FC = () => {
                   data-cursor="VIEW"
                   className={`w-full p-4 rounded-2xl border text-left transition flex items-center justify-between font-mono text-xs ${
                     isSelected
-                      ? 'bg-[#E5C158] text-black border-[#E5C158] font-bold shadow-lg shadow-[#E5C158]/20'
-                      : 'bg-white/5 text-zinc-300 border-white/10 hover:border-white/30 hover:text-white'
+                      ? 'bg-[#D97706] text-white border-[#D97706] font-bold shadow-md shadow-amber-600/20'
+                      : 'bg-zinc-50 text-zinc-700 border-zinc-200 hover:border-amber-400 hover:bg-white'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className="w-4 h-4" />
                     <span>{cat.name}</span>
                   </div>
-                  <ArrowRight className={`w-4 h-4 ${isSelected ? 'text-black' : 'opacity-0'}`} />
+                  <ArrowRight className={`w-4 h-4 ${isSelected ? 'text-white' : 'opacity-0'}`} />
                 </button>
               );
             })}
@@ -131,36 +131,36 @@ export const CapabilitiesPage: React.FC = () => {
 
           {/* Detailed Services Grid (Right 8 Cols) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="p-6 rounded-2xl bg-zinc-900 border border-white/10 space-y-2">
-              <span className="text-xs font-mono text-[#E5C158] uppercase tracking-widest block">
+            <div className="p-6 rounded-2xl bg-[#F8F9FA] border border-zinc-200 space-y-2 shadow-xs">
+              <span className="text-xs font-mono text-[#B45309] font-bold uppercase tracking-widest block">
                 DIVISION OVERVIEW
               </span>
-              <h2 className="text-2xl font-bold font-serif-cinematic text-white">
+              <h2 className="text-2xl font-bold font-serif-cinematic text-zinc-900">
                 {activeCategory.name}
               </h2>
-              <p className="text-sm text-zinc-300">{activeCategory.tagline}</p>
+              <p className="text-sm text-zinc-600">{activeCategory.tagline}</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {activeCategory.services.map((srv, idx) => (
                 <div
                   key={idx}
-                  className="p-6 rounded-2xl bg-zinc-950 border border-white/10 hover:border-[#E5C158]/40 transition space-y-3 flex flex-col justify-between"
+                  className="p-6 rounded-2xl bg-white border border-zinc-200 hover:border-amber-400 hover:shadow-md transition space-y-3 flex flex-col justify-between"
                 >
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-[#E5C158]">
+                    <div className="flex items-center gap-2 text-[#D97706]">
                       <CheckCircle2 className="w-4 h-4 shrink-0" />
-                      <h4 className="font-bold text-white text-base font-serif-cinematic">
+                      <h4 className="font-bold text-zinc-900 text-base font-serif-cinematic">
                         {srv.title}
                       </h4>
                     </div>
-                    <p className="text-xs text-zinc-400 font-sans leading-relaxed">
+                    <p className="text-xs text-zinc-600 font-sans leading-relaxed">
                       {srv.desc}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-white/10 flex justify-between items-center text-[11px] font-mono text-[#E5C158]">
-                    <span>SPECIFICATION:</span>
+                  <div className="pt-3 border-t border-zinc-100 flex justify-between items-center text-[11px] font-mono text-[#B45309]">
+                    <span className="text-zinc-500 font-medium">SPECIFICATION:</span>
                     <span className="font-bold">{srv.specs}</span>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export const CapabilitiesPage: React.FC = () => {
             <div className="pt-6">
               <a
                 href="/enquiry"
-                className="w-full py-4 rounded-2xl bg-[#E5C158] hover:bg-[#F0CE68] text-black font-mono font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-xl shadow-[#E5C158]/20"
+                className="w-full py-4 rounded-2xl bg-[#D97706] hover:bg-[#B45309] text-white font-mono font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition shadow-md shadow-amber-600/20"
               >
                 BOOK DIVISION SERVICES <ArrowRight className="w-4 h-4" />
               </a>
