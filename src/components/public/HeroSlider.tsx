@@ -349,9 +349,9 @@ export const HeroSlider: React.FC = () => {
         <motion.div
           key={`streak-${currentSlide.id}`}
           initial={{ x: '-100%', opacity: 0 }}
-          animate={{ x: '200%', opacity: [0, 0.35, 0] }}
+          animate={{ x: '200%', opacity: [0, 0.3, 0] }}
           transition={{ duration: 2, ease: 'easeInOut' }}
-          className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#FFB800]/25 to-transparent skew-x-12 z-10 pointer-events-none"
+          className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-[#E5C158]/20 to-transparent skew-x-12 z-10 pointer-events-none"
         />
       </div>
 
@@ -367,16 +367,16 @@ export const HeroSlider: React.FC = () => {
             className="max-w-4xl mx-auto space-y-6"
           >
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#FFB800]/15 border border-[#FFB800]/35 text-[#FFB800] font-mono-studio text-xs tracking-[0.25em] uppercase backdrop-blur-md shadow-lg">
-              <Sparkles className="w-4 h-4 fill-[#FFB800]" />
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[#E5C158]/15 border border-[#E5C158]/35 text-[#E5C158] font-mono text-xs tracking-widest uppercase backdrop-blur-md shadow-lg">
+              <Sparkles className="w-4 h-4 fill-[#E5C158]" />
               {currentSlide.eyebrow}
             </div>
 
-            {/* Avant-Garde Editorial Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-grotesk tracking-tight uppercase leading-[1.03] text-white drop-shadow-2xl">
+            {/* Cinematic Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black font-serif-cinematic tracking-tight uppercase leading-[1.05] text-white drop-shadow-2xl">
               {currentSlide.title}{' '}
               {currentSlide.highlightTitle && (
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFB800] via-amber-200 to-[#FF5500]">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E5C158] via-amber-200 to-[#E5C158]">
                   {currentSlide.highlightTitle}
                 </span>
               )}
@@ -388,22 +388,22 @@ export const HeroSlider: React.FC = () => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="pt-4 flex flex-wrap justify-center gap-4 font-mono-studio text-xs">
+            <div className="pt-4 flex flex-wrap justify-center gap-4 font-mono text-xs">
               <a
                 href={currentSlide.primaryCtaLink}
                 target={currentSlide.primaryCtaExternal ? '_blank' : '_self'}
                 rel={currentSlide.primaryCtaExternal ? 'noopener noreferrer' : undefined}
                 data-cursor="EXPLORE"
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#FFB800] to-[#FFC72C] hover:from-[#FFC72C] hover:to-[#FFB800] text-black font-black uppercase tracking-wider transition-all duration-300 shadow-xl shadow-[#FFB800]/30 flex items-center gap-2 hover:scale-105"
+                className="px-8 py-4 rounded-xl bg-[#E5C158] hover:bg-[#F0CE68] text-black font-bold uppercase tracking-wider transition-all duration-300 shadow-xl shadow-[#E5C158]/30 flex items-center gap-2 hover:scale-105"
               >
-                {currentSlide.primaryCtaText} <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                {currentSlide.primaryCtaText} <ArrowRight className="w-4 h-4" />
               </a>
               <a
                 href={currentSlide.secondaryCtaLink}
                 data-cursor="VIEW"
-                className="px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md flex items-center gap-2 hover:border-[#FFB800]"
+                className="px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold uppercase tracking-wider transition-all duration-300 backdrop-blur-md flex items-center gap-2 hover:border-[#E5C158]"
               >
-                {currentSlide.secondaryCtaText} <Film className="w-4 h-4 text-[#FFB800]" />
+                {currentSlide.secondaryCtaText} <Film className="w-4 h-4 text-[#E5C158]" />
               </a>
             </div>
           </motion.div>
@@ -411,13 +411,13 @@ export const HeroSlider: React.FC = () => {
       </div>
 
       {/* Slider Controls & Navigation Bar at Bottom */}
-      <div className="absolute bottom-0 inset-x-0 z-30 bg-gradient-to-t from-black/95 via-black/60 to-transparent pt-12 pb-6 px-4 sm:px-8">
+      <div className="absolute bottom-0 inset-x-0 z-30 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-12 pb-6 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
           
           {/* Left: Slide Counter & Progress Bars */}
           <div className="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-start">
             {/* Counter */}
-            <div className="font-mono-studio text-sm tracking-widest text-[#FFB800] font-bold">
+            <div className="font-mono text-sm tracking-widest text-[#E5C158] font-bold">
               0{currentIndex + 1} <span className="text-zinc-500 font-normal">/ 0{safeSlides.length}</span>
             </div>
 
@@ -434,11 +434,11 @@ export const HeroSlider: React.FC = () => {
                 >
                   {idx === currentIndex && (
                     <div
-                      className="absolute inset-y-0 left-0 bg-[#FFB800] transition-all ease-linear"
+                      className="absolute inset-y-0 left-0 bg-[#E5C158] transition-all ease-linear"
                       style={{ width: `${progress}%`, transitionDuration: isPaused ? '0ms' : '50ms' }}
                     />
                   )}
-                  {idx < currentIndex && <div className="absolute inset-0 bg-[#FFB800]" />}
+                  {idx < currentIndex && <div className="absolute inset-0 bg-[#E5C158]" />}
                 </div>
               ))}
             </div>
@@ -454,7 +454,7 @@ export const HeroSlider: React.FC = () => {
                   onClick={() => handleSelect(idx)}
                   className={`group relative overflow-hidden rounded-lg transition-all duration-300 text-left border ${
                     isActive
-                      ? 'w-40 h-16 border-[#FFB800] shadow-lg shadow-[#FFB800]/25 scale-105'
+                      ? 'w-40 h-16 border-[#E5C158] shadow-lg shadow-[#E5C158]/20 scale-105'
                       : 'w-28 h-14 border-white/15 opacity-60 hover:opacity-100 hover:border-white/40'
                   }`}
                   aria-label={`Switch to slide ${idx + 1}: ${slide.title}`}
@@ -468,7 +468,7 @@ export const HeroSlider: React.FC = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                   <div className="absolute bottom-1.5 left-2 right-2 flex items-center justify-between">
-                    <span className="font-mono-studio text-[10px] text-[#FFB800] font-bold">0{idx + 1}</span>
+                    <span className="font-mono text-[10px] text-[#E5C158] font-bold">0{idx + 1}</span>
                     <span className="font-sans text-[10px] text-white font-medium truncate max-w-[70px]">
                       {slide.id === 'stargaze' ? 'STARGAZE' : slide.title}
                     </span>
@@ -483,14 +483,14 @@ export const HeroSlider: React.FC = () => {
             <button
               onClick={handlePrev}
               aria-label="Previous slide"
-              className="p-3 rounded-full bg-black/60 hover:bg-[#FFB800] border border-white/20 hover:border-[#FFB800] text-white hover:text-black transition-all duration-300 hover:scale-110 shadow-lg"
+              className="p-3 rounded-full bg-black/60 hover:bg-[#E5C158] border border-white/20 hover:border-[#E5C158] text-white hover:text-black transition-all duration-300 hover:scale-110 shadow-lg"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={handleNext}
               aria-label="Next slide"
-              className="p-3 rounded-full bg-black/60 hover:bg-[#FFB800] border border-white/20 hover:border-[#FFB800] text-white hover:text-black transition-all duration-300 hover:scale-110 shadow-lg"
+              className="p-3 rounded-full bg-black/60 hover:bg-[#E5C158] border border-white/20 hover:border-[#E5C158] text-white hover:text-black transition-all duration-300 hover:scale-110 shadow-lg"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
