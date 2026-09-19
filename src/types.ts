@@ -60,6 +60,17 @@ export type Permission =
   | 'seo.edit'
   | 'appearance.view'
   | 'appearance.edit'
+  | 'pages.view'
+  | 'pages.create'
+  | 'pages.edit'
+  | 'pages.delete'
+  | 'pages.publish'
+  | 'menus.view'
+  | 'menus.create'
+  | 'menus.edit'
+  | 'menus.delete'
+  | 'customizer.view'
+  | 'customizer.edit'
   | 'settings.view'
   | 'settings.edit'
   | 'activity_logs.view';
@@ -440,3 +451,135 @@ export interface MediaItem {
   updatedAt: string;
   uploadedBy?: string;
 }
+
+// ==========================================
+// ELEMENTOR-STYLE VISUAL PAGE BUILDER & CUSTOMIZER
+// ==========================================
+
+export type PageBlockType =
+  | 'hero'
+  | 'heading'
+  | 'rich_text'
+  | 'image_banner'
+  | 'video_player'
+  | 'projects_grid'
+  | 'feature_cards'
+  | 'cta_banner'
+  | 'stats_counter'
+  | 'team_grid'
+  | 'equipment_showcase'
+  | 'testimonial_quote'
+  | 'faq_accordion'
+  | 'contact_form'
+  | 'spacer_divider'
+  | 'custom_html';
+
+export interface PageBlockStyles {
+  paddingTop?: number;
+  paddingBottom?: number;
+  paddingX?: number;
+  backgroundColor?: string;
+  textColor?: string;
+  accentColor?: string;
+  backgroundImageUrl?: string;
+  backgroundOverlayOpacity?: number;
+  borderRadius?: number;
+  customClasses?: string;
+  hideOnMobile?: boolean;
+  hideOnDesktop?: boolean;
+  containerWidth?: 'narrow' | 'standard' | 'wide' | 'full';
+}
+
+export interface PageBlock {
+  id: string;
+  type: PageBlockType;
+  title?: string;
+  settings: Record<string, any>;
+  styles: PageBlockStyles;
+}
+
+export interface CustomPage {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string;
+  status: ContentStatus;
+  template: 'default' | 'canvas-blank' | 'cinema-landing' | 'with-sidebar';
+  blocks: PageBlock[];
+  seoTitle?: string;
+  seoDescription?: string;
+  ogImageMediaId?: string;
+  ogImageUrl?: string;
+  customCss?: string;
+  createdAt: string;
+  updatedAt: string;
+  authorId?: string;
+}
+
+export interface NavigationMenuItem {
+  id: string;
+  label: string;
+  type: 'system' | 'page' | 'custom';
+  url: string;
+  target?: '_self' | '_blank';
+  badge?: string;
+  iconName?: string;
+  children?: NavigationMenuItem[];
+}
+
+export interface NavigationMenu {
+  id: string;
+  name: string;
+  location: 'header_primary' | 'header_secondary' | 'mobile_overlay' | 'footer_col_1' | 'footer_col_2' | 'footer_col_3';
+  items: NavigationMenuItem[];
+  updatedAt: string;
+}
+
+export interface HeaderCustomizerConfig {
+  layout: 'standard' | 'centered_logo' | 'minimal_split' | 'floating_bar';
+  sticky: boolean;
+  glassmorphism: boolean;
+  logoHeight: number;
+  showPrimaryCta: boolean;
+  primaryCtaText: string;
+  primaryCtaLink: string;
+  showExploreButton: boolean;
+  exploreButtonText: string;
+  bgColor: string;
+  textColor: string;
+  accentColor: string;
+}
+
+export interface FooterCustomizerConfig {
+  layout: 'columns_4' | 'columns_3' | 'minimal' | 'cinema_slate';
+  tagline: string;
+  copyrightText: string;
+  showNewsletter: boolean;
+  newsletterHeading: string;
+  newsletterSubtext: string;
+  showSocialIcons: boolean;
+  showBackToTop: boolean;
+  bgColor: string;
+  textColor: string;
+  accentColor: string;
+}
+
+export interface ThemePresetConfig {
+  accentColorPreset: 'amber' | 'gold' | 'crimson' | 'emerald' | 'sapphire' | 'monochrome';
+  customAccentHex?: string;
+  fontFamilyPreset: 'sans' | 'serif' | 'mono';
+  borderRadiusPreset: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  enableCustomCursor: boolean;
+  enableSmoothTransitions: boolean;
+}
+
+export interface ThemeCustomizerSettings {
+  id?: string;
+  header: HeaderCustomizerConfig;
+  footer: FooterCustomizerConfig;
+  theme: ThemePresetConfig;
+  customCss?: string;
+  customHeadCode?: string;
+  updatedAt?: string;
+}
+

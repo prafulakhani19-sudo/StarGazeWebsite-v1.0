@@ -149,6 +149,72 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
           )}
 
+          {/* Visual Page Builder & Customizer Shortcuts Banner */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a
+              href="/admin/pages"
+              className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 transition-all group flex flex-col justify-between shadow-lg"
+            >
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Film className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white uppercase font-display mb-1 group-hover:text-amber-400 transition">
+                  Visual Page Builder
+                </h3>
+                <p className="text-xs text-zinc-400 font-light leading-relaxed">
+                  Design, preview, and build custom cinema pages using modular Elementor blocks.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1 text-xs font-mono text-amber-400 font-bold">
+                <span>MANAGE PAGES</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a
+              href="/admin/menus"
+              className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 transition-all group flex flex-col justify-between shadow-lg"
+            >
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Globe className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white uppercase font-display mb-1 group-hover:text-amber-400 transition">
+                  Navigation Menus
+                </h3>
+                <p className="text-xs text-zinc-400 font-light leading-relaxed">
+                  Arrange headers, dropdown links, and footer columns with WordPress-style hierarchy.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1 text-xs font-mono text-amber-400 font-bold">
+                <span>CONFIGURE MENUS</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+
+            <a
+              href="/admin/customizer"
+              className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-amber-500/50 transition-all group flex flex-col justify-between shadow-lg"
+            >
+              <div>
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <h3 className="text-base font-bold text-white uppercase font-display mb-1 group-hover:text-amber-400 transition">
+                  Live Theme Customizer
+                </h3>
+                <p className="text-xs text-zinc-400 font-light leading-relaxed">
+                  Customize header layout, logo scale, palette presets, footer columns, and custom CSS.
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1 text-xs font-mono text-amber-400 font-bold">
+                <span>OPEN CUSTOMIZER</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+          </div>
+
           {/* Quick Action Cards & Recent Activity */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">

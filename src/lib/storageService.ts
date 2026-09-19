@@ -1,5 +1,6 @@
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage, auth } from '../firebase/config';
+import { compressImageForUpload } from './imageOptimizer';
 
 export interface UploadProgressCallback {
   (percentage: number, bytesTransferred: number, totalBytes: number): void;
@@ -12,10 +13,10 @@ export interface UploadResult {
 }
 
 /**
- * Upload a media file with automatic fallback:
- * 1. Tries Firebase Storage with a 4-second connectivity check.
- * 2. If Firebase Storage fails or is unavailable (e.g. bucket not provisioned),
- *    smoothly uploads via the authenticated server-side storage endpoint.
+ * Upload a media file with automatic optimization & fallback:
+ * 1. Automatically compresses oversized image files on the client before upload.
+ * 2. Tries Firebase Storage with a 4-second connectivity check.
+ * 3. If Firebase Storage fails or is unavailable, smoothly uploads via authenticated server-side storage.
  */
 export async function uploadMediaFile(
   file: File,
@@ -23,14 +24,26 @@ export async function uploadMediaFile(
   onProgress?: UploadProgressCallback,
   onStatusChange?: (status: string) => void
 ): Promise<UploadResult> {
+  // Compress image on the client first for ultra-fast upload and subsequent loading
+  let fileToUpload = file;
+  if (file.type.startsWith('image/')) {
+    onStatusChange?.('Optimizing image for fast delivery...');
+    try {
+      fileToUpload = await compressImageForUpload(file);
+    } catch {
+      // If compression fails, continue with original file
+      fileToUpload = file;
+    }
+  }
+
   // Try Firebase Storage first with a short timeout
   let firebaseFailed = false;
 
   try {
     onStatusChange?.('Connecting to Firebase Storage...');
     const storageRef = ref(storage, storagePath);
-    const uploadTask = uploadBytesResumable(storageRef, file, {
-      contentType: file.type,
+    const uploadTask = uploadBytesResumable(storageRef, fileToUpload, {
+      contentType: fileToUpload.type,
     });
 
     const firebaseResult = await new Promise<UploadResult>((resolve, reject) => {

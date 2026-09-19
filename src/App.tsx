@@ -12,6 +12,7 @@ import { NewsPage } from './pages/public/NewsPage';
 import { EnquiryPage } from './pages/public/EnquiryPage';
 import { CapabilitiesPage } from './pages/public/CapabilitiesPage';
 import { AboutPage } from './pages/public/AboutPage';
+import { DynamicCustomPage } from './pages/public/DynamicCustomPage';
 
 // Admin Pages
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
@@ -35,6 +36,10 @@ import { NewsAdminPage } from './pages/admin/NewsAdminPage';
 import { EnquiriesAdminPage } from './pages/admin/EnquiriesAdminPage';
 import { SettingsAdminPage } from './pages/admin/SettingsAdminPage';
 import { MediaLibraryPage } from './pages/admin/MediaLibraryPage';
+import { PagesAdminPage } from './pages/admin/PagesAdminPage';
+import { VisualPageBuilderPage } from './pages/admin/VisualPageBuilderPage';
+import { MenusAdminPage } from './pages/admin/MenusAdminPage';
+import { CustomizerAdminPage } from './pages/admin/CustomizerAdminPage';
 
 export default function App() {
   return (
@@ -51,6 +56,7 @@ export default function App() {
           <Route path="/distribution" element={<DistributionPage />} />
           <Route path="/news" element={<NewsPage />} />
           <Route path="/enquiry" element={<EnquiryPage />} />
+          <Route path="/p/:slug" element={<DynamicCustomPage />} />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -75,6 +81,12 @@ export default function App() {
           <Route path="/admin/media" element={<MediaLibraryPage />} />
           <Route path="/admin/enquiries" element={<EnquiriesAdminPage />} />
           <Route path="/admin/settings" element={<SettingsAdminPage />} />
+          
+          {/* Visual Page Builder, Menus & Theme Customizer Routes */}
+          <Route path="/admin/pages" element={<PagesAdminPage />} />
+          <Route path="/admin/pages/builder/:id" element={<VisualPageBuilderPage />} />
+          <Route path="/admin/menus" element={<MenusAdminPage />} />
+          <Route path="/admin/customizer" element={<CustomizerAdminPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -278,6 +278,72 @@ async function addDoc(collectionRef: any, data: any): Promise<any> {
   }
 }
 
+// Firestore REST Helpers for authenticated REST interaction without unauthenticated gRPC
+function convertFromFirestoreFields(fields: any): any {
+  if (!fields) return {};
+  const res: any = {};
+  for (const key of Object.keys(fields)) {
+    const valObj = fields[key];
+    if (valObj.stringValue !== undefined) res[key] = valObj.stringValue;
+    else if (valObj.integerValue !== undefined) res[key] = parseInt(valObj.integerValue, 10);
+    else if (valObj.doubleValue !== undefined) res[key] = parseFloat(valObj.doubleValue);
+    else if (valObj.booleanValue !== undefined) res[key] = valObj.booleanValue;
+    else if (valObj.timestampValue !== undefined) res[key] = valObj.timestampValue;
+    else if (valObj.nullValue !== undefined) res[key] = null;
+    else if (valObj.arrayValue !== undefined) {
+      res[key] = (valObj.arrayValue.values || []).map((v: any) => {
+        if (v.stringValue !== undefined) return v.stringValue;
+        if (v.integerValue !== undefined) return parseInt(v.integerValue, 10);
+        if (v.doubleValue !== undefined) return parseFloat(v.doubleValue);
+        if (v.booleanValue !== undefined) return v.booleanValue;
+        if (v.mapValue !== undefined) return convertFromFirestoreFields(v.mapValue.fields);
+        return v;
+      });
+    } else if (valObj.mapValue !== undefined) {
+      res[key] = convertFromFirestoreFields(valObj.mapValue.fields);
+    } else {
+      res[key] = Object.values(valObj)[0];
+    }
+  }
+  return res;
+}
+
+function convertToFirestoreFields(obj: any): any {
+  const fields: any = {};
+  for (const key of Object.keys(obj)) {
+    const val = obj[key];
+    if (val === undefined) continue;
+    if (val === null) {
+      fields[key] = { nullValue: null };
+    } else if (typeof val === 'string') {
+      fields[key] = { stringValue: val };
+    } else if (typeof val === 'boolean') {
+      fields[key] = { booleanValue: val };
+    } else if (typeof val === 'number') {
+      if (Number.isInteger(val)) {
+        fields[key] = { integerValue: val.toString() };
+      } else {
+        fields[key] = { doubleValue: val };
+      }
+    } else if (Array.isArray(val)) {
+      fields[key] = {
+        arrayValue: {
+          values: val.map((item) => {
+            if (typeof item === 'string') return { stringValue: item };
+            if (typeof item === 'boolean') return { booleanValue: item };
+            if (typeof item === 'number') return Number.isInteger(item) ? { integerValue: item.toString() } : { doubleValue: item };
+            if (typeof item === 'object') return { mapValue: { fields: convertToFirestoreFields(item) } };
+            return { stringValue: String(item) };
+          })
+        }
+      };
+    } else if (typeof val === 'object') {
+      fields[key] = { mapValue: { fields: convertToFirestoreFields(val) } };
+    }
+  }
+  return fields;
+}
+
 // Simple token store / crypto helper for session auth
 const LOCAL_SESSION_PREFIX = 'stargaze_session_';
 
@@ -487,11 +553,24 @@ app.post('/api/auth/login', async (req: Request, res: Response) => {
         lastLoginAt: new Date().toISOString(),
       };
 
-      // Safely attempt to sync to Firestore if possible, but never fail login if write is restricted
-      try {
-        await setDoc(doc(db, 'users', userUid), userProfile, { merge: true });
-      } catch (dbErr) {
-        console.warn('Silent server user doc sync notice:', dbErr);
+      // Safely attempt to sync to Firestore via authenticated REST if ID token is present
+      if (authSync.idToken && firebaseConfig.projectId) {
+        try {
+          const dbId = firebaseConfig.firestoreDatabaseId || '(default)';
+          const docUrl = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/${dbId}/documents/users/${userUid}`;
+          await fetch(docUrl, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${authSync.idToken}`,
+            },
+            body: JSON.stringify({
+              fields: convertToFirestoreFields(userProfile),
+            }),
+          });
+        } catch (syncErr) {
+          // Client will synchronize profile upon successful client sign-in
+        }
       }
 
       const sessionToken = `${LOCAL_SESSION_PREFIX}${userUid}`;
@@ -567,8 +646,33 @@ app.get('/api/bootstrap', async (req, res) => {
 // GET /api/admin/users - List Users
 app.get('/api/admin/users', requireSuperAdmin, async (req, res) => {
   try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ') && !authHeader.includes(LOCAL_SESSION_PREFIX) && firebaseConfig.projectId) {
+      const idToken = authHeader.split('Bearer ')[1];
+      const dbId = firebaseConfig.firestoreDatabaseId || '(default)';
+      const listUrl = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/${dbId}/documents/users`;
+      try {
+        const restRes = await fetch(listUrl, {
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+        if (restRes.ok) {
+          const restData = await restRes.json();
+          const users = (restData.documents || []).map((docObj: any) => {
+            const docId = docObj.name.split('/').pop();
+            return {
+              id: docId,
+              ...convertFromFirestoreFields(docObj.fields),
+            };
+          });
+          return res.json({ users });
+        }
+      } catch (restErr) {
+        console.warn('REST users list fallback:', restErr);
+      }
+    }
+
     const snapshot = await getDocs(collection(db, 'users'));
-    const users = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    const users = snapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }));
     res.json({ users });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -825,9 +929,7 @@ app.delete('/api/storage/delete', requireAuth, async (req: Request, res: Respons
 
 // Start Express + Vite setup
 async function startServer() {
-  const isProduction = process.env.NODE_ENV === 'production' || fs.existsSync(path.join(process.cwd(), 'dist', 'index.html'));
-
-  if (!isProduction) {
+  if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
@@ -835,9 +937,18 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
+    const distIndex = path.join(distPath, 'index.html');
+    const rootIndex = path.join(process.cwd(), 'index.html');
+
     app.use(express.static(distPath));
     app.get('*', (req: Request, res: Response) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+      if (fs.existsSync(distIndex)) {
+        res.sendFile(distIndex);
+      } else if (fs.existsSync(rootIndex)) {
+        res.sendFile(rootIndex);
+      } else {
+        res.status(404).send('Application bundle not found. Please run npm run build.');
+      }
     });
   }
 

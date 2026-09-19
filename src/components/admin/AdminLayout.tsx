@@ -26,13 +26,16 @@ import {
   X,
   Tag,
   Palette,
+  Layers,
+  LayoutTemplate,
+  Compass,
 } from 'lucide-react';
 
 interface SidebarItem {
   label: string;
   path: string;
   icon: React.ElementType;
-  section: 'OVERVIEW' | 'CONTENT CMS' | 'SYSTEM & CONTROLS';
+  section: 'OVERVIEW' | 'CONTENT CMS' | 'VISUAL BUILDER & THEME' | 'SYSTEM & CONTROLS';
   permission?: Permission;
   superAdminOnly?: boolean;
 }
@@ -48,6 +51,11 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
     // Overview
     { label: 'Dashboard', path: '/admin', icon: LayoutDashboard, section: 'OVERVIEW', permission: 'dashboard.view' },
     { label: 'Media Library', path: '/admin/media', icon: Camera, section: 'OVERVIEW', permission: 'projects.view' },
+
+    // Visual Builder & Theme Customizer (Elementor & WordPress features)
+    { label: 'Custom Pages (Builder)', path: '/admin/pages', icon: Layers, section: 'VISUAL BUILDER & THEME', permission: 'pages.view' },
+    { label: 'Navigation Menus', path: '/admin/menus', icon: Menu, section: 'VISUAL BUILDER & THEME', permission: 'menus.view' },
+    { label: 'Theme Customizer', path: '/admin/customizer', icon: Palette, section: 'VISUAL BUILDER & THEME', permission: 'customizer.view' },
 
     // Content CMS
     { label: 'Hero Screening Wall', path: '/admin/hero', icon: Sparkles, section: 'CONTENT CMS', permission: 'projects.view' },

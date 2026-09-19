@@ -8,14 +8,16 @@ service cloud.firestore {
 
     function isCmsAdmin() {
       return isAuthenticated() && (
-        request.auth.token.email == 'praful.akhani19@gmail.com' ||
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'SUPER_ADMIN' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'CONTENT_ADMIN' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'EDITOR' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'EQUIPMENT_MANAGER' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'EVENT_MANAGER' ||
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'MARKETING_MANAGER'
+        (request.auth.token.email != null && request.auth.token.email.lower() == 'praful.akhani19@gmail.com') ||
+        (request.auth.uid != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in [
+            'SUPER_ADMIN',
+            'CONTENT_ADMIN',
+            'EDITOR',
+            'EQUIPMENT_MANAGER',
+            'EVENT_MANAGER',
+            'MARKETING_MANAGER'
+          ]
         ))
       );
     }
@@ -28,7 +30,11 @@ service cloud.firestore {
     // Users Collection
     match /users/{userId} {
       allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && (request.auth.uid == userId || isCmsAdmin());
+      allow write: if isAuthenticated() && (
+        request.auth.uid == userId ||
+        (request.auth.token.email != null && request.auth.token.email.lower() == 'praful.akhani19@gmail.com') ||
+        isCmsAdmin()
+      );
     }
 
     // Activity Logs Collection
@@ -123,6 +129,24 @@ service cloud.firestore {
 
     // SEO Settings Collection (seoSettings)
     match /seoSettings/{id} {
+      allow read: if true;
+      allow write: if isCmsAdmin();
+    }
+
+    // Custom Pages (Elementor Style Builder)
+    match /customPages/{id} {
+      allow read: if true;
+      allow write: if isCmsAdmin();
+    }
+
+    // Navigation Menus (WordPress Style Menus)
+    match /navigationMenus/{id} {
+      allow read: if true;
+      allow write: if isCmsAdmin();
+    }
+
+    // Theme Customizer Settings
+    match /themeCustomizer/{id} {
       allow read: if true;
       allow write: if isCmsAdmin();
     }

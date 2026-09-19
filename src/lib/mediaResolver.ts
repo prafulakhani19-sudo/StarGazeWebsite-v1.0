@@ -1,6 +1,7 @@
-import { doc, getDoc, collection, getDocs, query, where, setDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, setDoc, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { ProjectItem, EquipmentItem, EventItem, DistributionTitle, NewsArticle } from '../types';
+import { getOptimizedImageUrl } from './imageOptimizer';
 
 export interface MediaDocument {
   id: string;
@@ -44,8 +45,13 @@ export interface ResolvedMedia {
 // In-memory cache for fast resolution
 const mediaCache: { [mediaId: string]: MediaDocument } = {};
 const assignmentCache: { [slot: string]: MediaAssignment } = {};
+let allMediaFetched = false;
+let allAssignmentsFetched = false;
 
-export async function fetchAllMedia(): Promise<MediaDocument[]> {
+export async function fetchAllMedia(forceRefresh = false): Promise<MediaDocument[]> {
+  if (!forceRefresh && allMediaFetched && Object.keys(mediaCache).length > 0) {
+    return Object.values(mediaCache);
+  }
   try {
     const q = collection(db, 'media');
     const snapshot = await getDocs(q);
@@ -56,14 +62,18 @@ export async function fetchAllMedia(): Promise<MediaDocument[]> {
       mediaCache[item.id] = item;
       list.push(item);
     });
+    allMediaFetched = true;
     return list;
   } catch (err) {
     console.error('Error fetching media:', err);
-    return [];
+    return Object.values(mediaCache);
   }
 }
 
-export async function fetchAllAssignments(): Promise<MediaAssignment[]> {
+export async function fetchAllAssignments(forceRefresh = false): Promise<MediaAssignment[]> {
+  if (!forceRefresh && allAssignmentsFetched && Object.keys(assignmentCache).length > 0) {
+    return Object.values(assignmentCache);
+  }
   try {
     const q = collection(db, 'mediaAssignments');
     const snapshot = await getDocs(q);
@@ -73,10 +83,11 @@ export async function fetchAllAssignments(): Promise<MediaAssignment[]> {
       assignmentCache[data.slot] = data;
       list.push(data);
     });
+    allAssignmentsFetched = true;
     return list;
   } catch (err) {
     console.error('Error fetching media assignments:', err);
-    return [];
+    return Object.values(assignmentCache);
   }
 }
 
@@ -85,6 +96,7 @@ export async function getMediaForSlot(
   fallbackUrl: string = '',
   fallbackAlt: string = 'Stargaze Media'
 ): Promise<ResolvedMedia> {
+  const optimizedFallback = getOptimizedImageUrl(fallbackUrl);
   try {
     // Check assignment cache or fetch
     let assignment = assignmentCache[slot];
@@ -110,7 +122,7 @@ export async function getMediaForSlot(
 
       if (mediaDoc && mediaDoc.downloadUrl) {
         return {
-          url: mediaDoc.downloadUrl,
+          url: getOptimizedImageUrl(mediaDoc.downloadUrl),
           alt: mediaDoc.altText || fallbackAlt,
           width: mediaDoc.width,
           height: mediaDoc.height,
@@ -124,7 +136,7 @@ export async function getMediaForSlot(
   }
 
   return {
-    url: fallbackUrl,
+    url: optimizedFallback,
     alt: fallbackAlt,
   };
 }
@@ -143,7 +155,7 @@ export async function resolveMediaById(mediaId: string): Promise<ResolvedMedia |
     }
     if (mediaDoc && mediaDoc.downloadUrl) {
       return {
-        url: mediaDoc.downloadUrl,
+        url: getOptimizedImageUrl(mediaDoc.downloadUrl),
         alt: mediaDoc.altText || mediaDoc.name || 'Stargaze Media',
         focalPoint: mediaDoc.focalPoint,
         mediaId: mediaDoc.id,

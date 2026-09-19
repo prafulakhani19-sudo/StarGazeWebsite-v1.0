@@ -164,9 +164,50 @@
         "slot": { "type": "string" },
         "mediaId": { "type": "string" }
       }
+    },
+    "CustomPage": {
+      "title": "CustomPage",
+      "description": "Visual elementor-style custom page with modular blocks",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "status": { "type": "string" },
+        "template": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "NavigationMenu": {
+      "title": "NavigationMenu",
+      "description": "Configurable site navigation menu with submenus and targets",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "location": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "ThemeCustomizer": {
+      "title": "ThemeCustomizer",
+      "description": "WordPress-style live theme, header, footer, and styling customizer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
     }
   },
   "firestore": {
+    "/customPages/{pageId}": {
+      "schema": "CustomPage",
+      "description": "Elementor-style custom pages"
+    },
+    "/navigationMenus/{menuId}": {
+      "schema": "NavigationMenu",
+      "description": "Site navigation menus"
+    },
     "/heroSlides/{slideId}": {
       "schema": "HeroSlide",
       "description": "Homepage hero slider items"

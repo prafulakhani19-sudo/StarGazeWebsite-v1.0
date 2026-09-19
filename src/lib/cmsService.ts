@@ -7,12 +7,14 @@ import {
   HeroSlideItem, ProjectItem, EquipmentItem, EventItem, 
   DistributionTitle, TeamMember, PartnerItem, MarketingProjectItem, 
   NewsArticle, SiteContentConfig, BrandSettings, SEOSettings, 
-  ContentStatus, MediaUsageInfo, MediaUsageLocation, ActivityLog 
+  ContentStatus, MediaUsageInfo, MediaUsageLocation, ActivityLog,
+  CustomPage, NavigationMenu, ThemeCustomizerSettings
 } from '../types';
 import { 
   INITIAL_HERO_SLIDES, INITIAL_TEAM_MEMBERS, INITIAL_PARTNERS, 
   INITIAL_MARKETING_PROJECTS, INITIAL_SITE_CONTENT, 
-  INITIAL_BRAND_SETTINGS, INITIAL_SEO_SETTINGS 
+  INITIAL_BRAND_SETTINGS, INITIAL_SEO_SETTINGS,
+  INITIAL_CUSTOM_PAGES, INITIAL_NAVIGATION_MENUS, INITIAL_THEME_CUSTOMIZER
 } from '../data/initialCmsData';
 import { 
   INITIAL_PROJECTS, INITIAL_EQUIPMENT, INITIAL_EVENTS, 
@@ -316,6 +318,91 @@ export async function getSEOSettings(): Promise<SEOSettings> {
 
 export async function saveSEOSettings(settings: SEOSettings): Promise<void> {
   await saveCmsDocument('site_settings', 'seo', settings, 'UPDATE_SEO_SETTINGS');
+}
+
+// 13. CUSTOM PAGES (Elementor Visual Builder)
+export async function getCustomPages(): Promise<CustomPage[]> {
+  return fetchCollectionWithSeed<CustomPage>('customPages', INITIAL_CUSTOM_PAGES);
+}
+
+export async function getCustomPageBySlug(slug: string): Promise<CustomPage | null> {
+  try {
+    const pages = await getCustomPages();
+    const found = pages.find((p) => p.slug.toLowerCase() === slug.toLowerCase());
+    return found || null;
+  } catch (err) {
+    console.warn('Error fetching page by slug:', err);
+    const found = INITIAL_CUSTOM_PAGES.find((p) => p.slug.toLowerCase() === slug.toLowerCase());
+    return found || null;
+  }
+}
+
+export async function getCustomPageById(id: string): Promise<CustomPage | null> {
+  try {
+    const docRef = doc(db, 'customPages', id);
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return { id: snap.id, ...snap.data() } as CustomPage;
+    }
+    const initial = INITIAL_CUSTOM_PAGES.find((p) => p.id === id);
+    return initial || null;
+  } catch (err) {
+    console.warn('Error fetching custom page by id:', err);
+    return INITIAL_CUSTOM_PAGES.find((p) => p.id === id) || null;
+  }
+}
+
+export async function saveCustomPage(id: string, pageData: Partial<CustomPage>): Promise<void> {
+  return saveCmsDocument('customPages', id, pageData, 'SAVE_CUSTOM_PAGE');
+}
+
+export async function deleteCustomPage(id: string): Promise<void> {
+  return deleteCmsDocument('customPages', id);
+}
+
+// 14. NAVIGATION MENUS (WordPress Style)
+export async function getNavigationMenus(): Promise<NavigationMenu[]> {
+  return fetchCollectionWithSeed<NavigationMenu>('navigationMenus', INITIAL_NAVIGATION_MENUS);
+}
+
+export async function getNavigationMenuByLocation(location: NavigationMenu['location']): Promise<NavigationMenu | null> {
+  try {
+    const menus = await getNavigationMenus();
+    return menus.find((m) => m.location === location) || null;
+  } catch (err) {
+    console.warn('Error fetching menu by location:', err);
+    return INITIAL_NAVIGATION_MENUS.find((m) => m.location === location) || null;
+  }
+}
+
+export async function saveNavigationMenu(id: string, menuData: Partial<NavigationMenu>): Promise<void> {
+  return saveCmsDocument('navigationMenus', id, menuData, 'SAVE_NAVIGATION_MENU');
+}
+
+export async function deleteNavigationMenu(id: string): Promise<void> {
+  return deleteCmsDocument('navigationMenus', id);
+}
+
+// 15. THEME CUSTOMIZER SETTINGS (WordPress Customizer Style)
+export async function getThemeCustomizerSettings(): Promise<ThemeCustomizerSettings> {
+  const path = 'site_settings/customizer';
+  try {
+    const docRef = doc(db, 'site_settings', 'customizer');
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return snap.data() as ThemeCustomizerSettings;
+    }
+    // Auto-seed
+    await setDoc(docRef, INITIAL_THEME_CUSTOMIZER);
+    return INITIAL_THEME_CUSTOMIZER;
+  } catch (err) {
+    console.warn('Fetch theme customizer failed, using initial:', err);
+    return INITIAL_THEME_CUSTOMIZER;
+  }
+}
+
+export async function saveThemeCustomizerSettings(settings: ThemeCustomizerSettings): Promise<void> {
+  await saveCmsDocument('site_settings', 'customizer', settings, 'UPDATE_THEME_CUSTOMIZER');
 }
 
 // ==========================================

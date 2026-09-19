@@ -5,6 +5,7 @@ import { STARGAZE_MEDIA_REGISTRY } from '../../data/media';
 import { StargazeImage } from '../common/StargazeImage';
 import { getMediaForSlot, resolveMediaById } from '../../lib/mediaResolver';
 import { getHeroSlides } from '../../lib/cmsService';
+import { preloadImage } from '../../lib/imageOptimizer';
 
 export interface HeroSlideData {
   id: string;
@@ -21,32 +22,32 @@ const INITIAL_HERO_SLIDES: HeroSlideData[] = [
   {
     id: 'nayi-soch',
     title: 'Nayi Soch (112)',
-    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'nayi-soch-desktop')?.src || '/assets/stargaze/hero/nayi-soch-1920x1080.png',
-    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'nayi-soch-mobile')?.src || '/assets/stargaze/work/nayi-soch-1080x1350.png',
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'nayi-soch-desktop')?.src || 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1920&q=75',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'nayi-soch-mobile')?.src || 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=1080&h=1350&q=75',
   },
   {
     id: 'psycho',
     title: 'Psycho (Samjo To)',
-    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'psycho-desktop')?.src || '/assets/stargaze/hero/psycho-1920x1080.png',
-    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'psycho-mobile')?.src || '/assets/stargaze/work/psycho-1080x1350.png',
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'psycho-desktop')?.src || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1920&q=75',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'psycho-mobile')?.src || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1080&h=1350&q=75',
   },
   {
     id: 'saheb-vikaskari',
     title: 'Saheb Vikas Kari',
-    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'saheb-vikaskari-desktop')?.src || '/assets/stargaze/hero/saheb-vikaskari-1920x1080.png',
-    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'saheb-vikaskari-mobile')?.src || '/assets/stargaze/work/saheb-vikaskari-1080x1350.png',
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'saheb-vikaskari-desktop')?.src || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1920&q=75',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'saheb-vikaskari-mobile')?.src || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1080&h=1350&q=75',
   },
   {
     id: 'father-son',
     title: 'Father & Son Duo',
-    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'father-son-desktop')?.src || '/assets/stargaze/hero/father-son-duo-1920x1080.png',
-    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'father-son-mobile')?.src || '/assets/stargaze/events/father-son-duo-1080x1350.png',
+    desktopSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'father-son-desktop')?.src || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1920&q=75',
+    mobileSrc: STARGAZE_MEDIA_REGISTRY.find((m) => m.id === 'father-son-mobile')?.src || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1080&h=1350&q=75',
   },
   {
     id: 'stargaze-flagship',
     title: 'Stargaze Cinematic Studios',
-    desktopSrc: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1920&h=1080&q=85',
-    mobileSrc: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1080&h=1350&q=85',
+    desktopSrc: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1920&h=1080&q=75',
+    mobileSrc: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1080&h=1350&q=75',
   },
 ];
 
@@ -60,6 +61,15 @@ export const HeroSlider: React.FC = () => {
   const [direction, setDirection] = useState(1);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+
+  // Instantly preload the very first slide's image for zero-delay initial render
+  useEffect(() => {
+    preloadImage(INITIAL_HERO_SLIDES[0].desktopSrc, { width: 1920, quality: 75 });
+    preloadImage(INITIAL_HERO_SLIDES[0].mobileSrc, { width: 1080, quality: 75 });
+    if (INITIAL_HERO_SLIDES[1]) {
+      preloadImage(INITIAL_HERO_SLIDES[1].desktopSrc, { width: 1920, quality: 75 });
+    }
+  }, []);
 
   useEffect(() => {
     async function resolveHeroMedia() {
@@ -136,20 +146,36 @@ export const HeroSlider: React.FC = () => {
 
           return {
             ...slide,
-            desktopSrc: finalDesktopSrc || 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1920&h=1080&q=85',
-            mobileSrc: finalMobileSrc || finalDesktopSrc || 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1080&h=1350&q=85',
+            desktopSrc: finalDesktopSrc || 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1920&h=1080&q=75',
+            mobileSrc: finalMobileSrc || finalDesktopSrc || 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1080&h=1350&q=75',
             desktopFocalPoint: finalDesktopFocalPoint,
             mobileFocalPoint: finalMobileFocalPoint,
           };
         })
       );
       setSlides(resolvedSlides);
+
+      // Warm up cache for all resolved slides in background
+      resolvedSlides.forEach((s) => {
+        if (s.desktopSrc) preloadImage(s.desktopSrc, { width: 1920, quality: 75 });
+        if (s.mobileSrc) preloadImage(s.mobileSrc, { width: 1080, quality: 75 });
+      });
     }
     resolveHeroMedia();
   }, []);
 
   const safeSlides = slides.length > 0 ? slides : INITIAL_HERO_SLIDES;
   const currentSlide = safeSlides[currentIndex] || safeSlides[0];
+
+  // Preload next upcoming slide whenever currentIndex advances
+  useEffect(() => {
+    const nextIdx = (currentIndex + 1) % safeSlides.length;
+    const nextSlide = safeSlides[nextIdx];
+    if (nextSlide) {
+      if (nextSlide.desktopSrc) preloadImage(nextSlide.desktopSrc, { width: 1920, quality: 75 });
+      if (nextSlide.mobileSrc) preloadImage(nextSlide.mobileSrc, { width: 1080, quality: 75 });
+    }
+  }, [currentIndex, safeSlides]);
 
   const handleNext = useCallback(() => {
     setDirection(1);
@@ -251,12 +277,12 @@ export const HeroSlider: React.FC = () => {
         <AnimatePresence initial={false}>
           <motion.div
             key={currentSlide.id}
-            initial={{ opacity: 0, scale: 1.03 }}
+            initial={{ opacity: 0, scale: 1.02 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{
-              opacity: { duration: 1.2, ease: [0.4, 0, 0.2, 1] },
-              scale: { duration: 6.0, ease: 'easeOut' },
+              opacity: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
+              scale: { duration: 5.0, ease: 'easeOut' },
             }}
             className="absolute inset-0 w-full h-full will-change-[opacity,transform]"
           >
@@ -266,6 +292,9 @@ export const HeroSlider: React.FC = () => {
                 src={currentSlide.desktopSrc}
                 alt={currentSlide.title || 'Banner Slide'}
                 focalPoint={currentSlide.desktopFocalPoint}
+                priority={true}
+                quality={78}
+                sizes="100vw"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -276,13 +305,16 @@ export const HeroSlider: React.FC = () => {
                 src={currentSlide.mobileSrc || currentSlide.desktopSrc}
                 alt={currentSlide.title || 'Banner Slide'}
                 focalPoint={currentSlide.mobileFocalPoint || currentSlide.desktopFocalPoint}
+                priority={true}
+                quality={78}
+                sizes="100vw"
                 className="w-full h-full object-cover"
               />
             </div>
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Arrows (Visible on hover on desktop, always accessible on touch) */}
+        {/* Navigation Arrows */}
         <button
           onClick={handlePrev}
           aria-label="Previous Slide"
